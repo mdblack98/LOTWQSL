@@ -12,7 +12,7 @@ namespace LOTWQSL.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -49,13 +49,49 @@ namespace LOTWQSL.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 292, 300")]
-        public global::System.Drawing.Rectangle RestoreBounds {
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int Top {
             get {
-                return ((global::System.Drawing.Rectangle)(this["RestoreBounds"]));
+                return ((int)(this["Top"]));
             }
             set {
-                this["RestoreBounds"] = value;
+                this["Top"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int Left {
+            get {
+                return ((int)(this["Left"]));
+            }
+            set {
+                this["Left"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
+        public int Height {
+            get {
+                return ((int)(this["Height"]));
+            }
+            set {
+                this["Height"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
+        public int Width {
+            get {
+                return ((int)(this["Width"]));
+            }
+            set {
+                this["Width"] = value;
             }
         }
         
@@ -145,6 +181,18 @@ namespace LOTWQSL.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 292, 300")]
+        public global::System.Drawing.Rectangle RestoreBounds {
+            get {
+                return ((global::System.Drawing.Rectangle)(this["RestoreBounds"]));
+            }
+            set {
+                this["RestoreBounds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int GridMode {
             get {
@@ -158,9 +206,9 @@ namespace LOTWQSL.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("400, 400")]
-        public global::System.Drawing.Size MapSize {
+        public string MapSize {
             get {
-                return ((global::System.Drawing.Size)(this["MapSize"]));
+                return ((string)(this["MapSize"]));
             }
             set {
                 this["MapSize"] = value;
@@ -193,7 +241,7 @@ namespace LOTWQSL.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 200, 350")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 0, 0")]
         public global::System.Drawing.Rectangle GridRestoreBounds {
             get {
                 return ((global::System.Drawing.Rectangle)(this["GridRestoreBounds"]));
@@ -296,6 +344,18 @@ namespace LOTWQSL.Properties {
             }
             set {
                 this["QSODate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
+        public string StartDate {
+            get {
+                return ((string)(this["StartDate"]));
+            }
+            set {
+                this["StartDate"] = value;
             }
         }
     }
