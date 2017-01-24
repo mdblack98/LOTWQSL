@@ -27,11 +27,11 @@ namespace LOTWQSL
         const int STATES = 1;
         int gridHeadersColumn = Properties.Settings.Default.GridHeadersColumn; // what we display for the column headers on the grid
         bool gridHeadersDraw = true;
+        int lastSelectedIndex = -1;
 
         public GridForm()
         {
             InitializeComponent();
-            bandsLoad();
             bandStates = new HashSet<string>();
             //bandCountries = new HashSet<string>();
             modes = new HashSet<string>();
@@ -43,6 +43,7 @@ namespace LOTWQSL
 
         private void GridForm_Load(object sender, EventArgs e)
         {
+            bandsLoad();
             this.Top = Properties.Settings.Default.GridRestoreBounds.Top;
             this.Left = Properties.Settings.Default.GridRestoreBounds.Left;
             this.Height = Properties.Settings.Default.GridRestoreBounds.Height;
@@ -85,10 +86,11 @@ namespace LOTWQSL
             dataGridView1.Rows[i].HeaderCell.Value = "Total";
              */
             parseModes();
-            modeSelected = Properties.Settings.Default.GridMode;
+            //modeSelected = Properties.Settings.Default.GridMode;
+            //comboBoxMode.SelectedItem = modeSelected;
             fillGrid();
         }
-        
+
         void fixColRow()
         {
             string hiding = Properties.Settings.Default.GridHide;
@@ -143,19 +145,21 @@ namespace LOTWQSL
         private void bandsLoad()
         {
             bands = new List<string>();
-            bands.Add("6M");
-            bands.Add("10M");
-            bands.Add("12M");
-            bands.Add("15M");
-            bands.Add("17M");
-            bands.Add("20M");
-            bands.Add("30M");
-            bands.Add("40M");
-            bands.Add("60M");
-            bands.Add("80M");
-            bands.Add("160M");
+            //bands.Add("6M");
+            //bands.Add("10M");
+            //bands.Add("12M");
+            //bands.Add("15M");
+            //bands.Add("17M");
+            //bands.Add("20M");
+            //bands.Add("30M");
+            //bands.Add("40M");
+            //bands.Add("60M");
+            //bands.Add("80M");
+            //bands.Add("160M");
             bands.Add("ALL");
-            bands.Add("Triple");
+            bands.Add("Digital");
+            bands.Add("TriplePlay");
+            //parseModes(); // this will add all used bands
         }
 
         private void statesLoad()
@@ -535,35 +539,34 @@ namespace LOTWQSL
         private void parseModes()
         {
             modes.Clear();
+            comboBoxMode.Items.Clear();
             modes.Add("ALL");
-            modes.Add("DIGITAL");
-            comboBoxMode.Items.Add("ALL");
-            comboBoxMode.Items.Add("DIGITAL");
-            int i = 0;
-            int iSelected = i;
-            comboBoxMode.SelectedIndex = i;
-            foreach (string s in MainWindow.states) // find all modes we have done
+            comboBoxMode.Items.Insert(0, "ALL");
+            //modes.Add("DIGITAL");
+            //modes.Add("TRIPLEPLAY");
+            //comboBoxMode.Items.Add("DIGITAL");
+            //comboBoxMode.Items.Add("TRIPLEPLAY");
+            foreach (string s in MainWindow2.states) // find all modes we have done
             {
                 string[] tokens = s.Split(new[] { ' ' });
-                if (!modes.Contains(tokens[1]))
+                string band = tokens[0];
+                string mode = tokens[1];
+                addBand(band);
+                if (!modes.Contains(mode))
                 {
-                    modes.Add(tokens[1]);
-                    comboBoxMode.Items.Add(tokens[1]);
-                    ++i;
-                    if (modeSelected.Equals(tokens[1]))
-                    {
-                        iSelected = i;
-                    }
+                    modes.Add(mode);
+                    comboBoxMode.Items.Add(mode);
+                    comboBoxMode.Sorted = true;
                 }
             }
-            comboBoxMode.SelectedIndex = iSelected;
+            comboBoxMode.SelectedIndex = Properties.Settings.Default.GridMode;
         }
 
         private void parseBandMode2(string band, string mode)
         {
             bandStates.Clear();
             mode = " " + mode + " ";
-            foreach (string s in MainWindow.states)
+            foreach (string s in MainWindow2.states)
             {
                 //if (s.Substring(0, band.Length).Equals(band) && (s.Contains(mode) || mode.Equals(" ALL ")))
                 if ((s.Substring(0, band.Length).Equals(band) || band.Equals(BANDALL)) && (s.Contains(mode) || mode.Equals(" " + MODEALL + " ")))
@@ -603,12 +606,40 @@ namespace LOTWQSL
             }
         }
         */
+        // Will add a band to comboBoxBand if it's not already there
+        private void addBand(string bandChk)
+        {
+            if (bands.Contains(bandChk)) return;
+            int i = 0;
+            int insertAt = -1;
+            int metersChk = int.Parse(bandChk.Split('M')[0]);
+            foreach (String band in bands)
+            {
+                if (band.Equals("ALL"))
+                {
+                    insertAt = i;
+                    break;
+                }
+                int meters = int.Parse(band.Split('M')[0]);
+                if (metersChk < meters)
+                {
+                    insertAt = i;
+                    break;
+                }
+                ++i;
+            }
+            if (insertAt >= 0)
+            {
+                bands.Insert(insertAt, bandChk);
+            }
+        }
+
         private void parseBandMode(string band, string mode)
         {
             LOTWMode LOTWmode = new LOTWMode();
             bandStates.Clear();
             mode = " " + mode + " ";
-            foreach (string s in MainWindow.states)
+            foreach (string s in MainWindow2.states)
             {
                 string[] tokens = s.Split(new string[] { " " }, StringSplitOptions.None);
                 string myband = tokens[0];
@@ -619,13 +650,17 @@ namespace LOTWQSL
                 {
                     myband = "6M";
                 }
+                if (mystate=="AK")
+                {
+                    mystate = "AK";
+                }
+                addBand(myband);
                 //string myband = s.Substring(0, band.Length);
-                Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ") || mode.Equals(" " + MODETRIPLEPLAY + " ");
+                Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
-                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode);
-                Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate);
-
-                if ((bandOK && (modeOK || isDigitalMode) || isTriplePlay))
+                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && band.Contains("Digital");
+                Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate) && band.Contains("TriplePlay");
+                if ((bandOK && modeOK) || (modeOK && isDigitalMode) || isTriplePlay)
                 {
                     string state = s.Substring(s.Length - 2);
                     bandStates.Add(state);
@@ -647,13 +682,24 @@ namespace LOTWQSL
 
         private void comboBoxMode_SelectedIndexChanged_1(object sender, EventArgs e)
         {
+            comboBoxMode.Text = comboBoxMode.SelectedItem.ToString();
             modeSelected = comboBoxMode.SelectedIndex;
-            Properties.Settings.Default.GridMode = modeSelected;
-            Properties.Settings.Default.Save();
-            fillGrid();
+            if (lastSelectedIndex != -1)
+            {
+                Properties.Settings.Default.GridMode = modeSelected;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                modeSelected = Properties.Settings.Default.GridMode;
+                comboBoxMode.SelectedItem = modeSelected;
+            }
+            if (lastSelectedIndex >=0 && lastSelectedIndex != modeSelected)
+                fillGrid();
+            lastSelectedIndex = modeSelected;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             fillGrid();
         }
@@ -775,7 +821,7 @@ namespace LOTWQSL
         }
         private void loadToolTipsColumns() 
         {
-            foreach(KeyValuePair<string,Dictionary<string,int>> kvpair1 in MainWindow.popularStates) 
+            foreach(KeyValuePair<string,Dictionary<string,int>> kvpair1 in MainWindow2.popularStates) 
             {
                 string state = kvpair1.Key;
                 Dictionary<string, int> dict = kvpair1.Value;
@@ -800,7 +846,7 @@ namespace LOTWQSL
 
         private void loadToolTipsRows()
         {
-            foreach (KeyValuePair<string, Dictionary<string, int>> kvpair1 in MainWindow.popularStates)
+            foreach (KeyValuePair<string, Dictionary<string, int>> kvpair1 in MainWindow2.popularStates)
             {
                 string state = kvpair1.Key;
                 Dictionary<string, int> dict = kvpair1.Value;

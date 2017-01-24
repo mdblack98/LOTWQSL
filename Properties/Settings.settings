@@ -83,8 +83,5 @@
     <Setting Name="QSODate" Type="System.String" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
-    <Setting Name="StartDate" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1900-01-01</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

@@ -1,6 +1,6 @@
 ﻿namespace LOTWQSL
 {
-    partial class MainWindow
+    partial class MainWindow2
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow2));
             this.textBoxLogin = new System.Windows.Forms.TextBox();
             this.password = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -52,8 +52,8 @@
             this.textBoxLogin.Name = "textBoxLogin";
             this.textBoxLogin.Size = new System.Drawing.Size(56, 20);
             this.textBoxLogin.TabIndex = 0;
-            this.textBoxLogin.TextChanged += new System.EventHandler(this.login_TextChanged);
-            this.textBoxLogin.Leave += new System.EventHandler(this.login_Leave);
+            this.textBoxLogin.TextChanged += new System.EventHandler(this.Login_TextChanged);
+            this.textBoxLogin.Leave += new System.EventHandler(this.Login_Leave);
             // 
             // password
             // 
@@ -62,7 +62,7 @@
             this.password.PasswordChar = '*';
             this.password.Size = new System.Drawing.Size(56, 20);
             this.password.TabIndex = 1;
-            this.password.TextChanged += new System.EventHandler(this.password_TextChanged);
+            this.password.TextChanged += new System.EventHandler(this.Password_TextChanged);
             // 
             // richTextBox1
             // 
@@ -102,7 +102,7 @@
             this.buttonRefresh.TabIndex = 5;
             this.buttonRefresh.Text = "Refresh";
             this.buttonRefresh.UseVisualStyleBackColor = true;
-            this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
+            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
             // 
             // textBoxSince
             // 
@@ -111,7 +111,7 @@
             this.textBoxSince.Size = new System.Drawing.Size(67, 20);
             this.textBoxSince.TabIndex = 2;
             this.textBoxSince.Text = "1900-01-01";
-            this.textBoxSince.Leave += new System.EventHandler(this.sinceLOTWBox_Leave);
+            this.textBoxSince.Leave += new System.EventHandler(this.SinceLOTWBox_Leave);
             // 
             // labelSince
             // 
@@ -130,7 +130,7 @@
             this.buttonHelp.TabIndex = 4;
             this.buttonHelp.Text = "Help";
             this.buttonHelp.UseVisualStyleBackColor = true;
-            this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
+            this.buttonHelp.Click += new System.EventHandler(this.ButtonHelp_Click);
             // 
             // buttonMap
             // 
@@ -140,7 +140,7 @@
             this.buttonMap.TabIndex = 6;
             this.buttonMap.Text = "Map";
             this.buttonMap.UseVisualStyleBackColor = true;
-            this.buttonMap.Click += new System.EventHandler(this.buttonMap_Click);
+            this.buttonMap.Click += new System.EventHandler(this.ButtonMap_Click);
             // 
             // buttonGrid
             // 
@@ -150,7 +150,7 @@
             this.buttonGrid.TabIndex = 7;
             this.buttonGrid.Text = "Grid";
             this.buttonGrid.UseVisualStyleBackColor = true;
-            this.buttonGrid.Click += new System.EventHandler(this.buttonGrid_Click);
+            this.buttonGrid.Click += new System.EventHandler(this.ButtonGrid_Click);
             // 
             // textBoxEnd
             // 
@@ -158,7 +158,7 @@
             this.textBoxEnd.Name = "textBoxEnd";
             this.textBoxEnd.Size = new System.Drawing.Size(67, 20);
             this.textBoxEnd.TabIndex = 3;
-            this.textBoxEnd.Leave += new System.EventHandler(this.textBoxEnd_Leave);
+            this.textBoxEnd.Leave += new System.EventHandler(this.TextBoxEnd_Leave);
             // 
             // labelEnd
             // 
@@ -171,9 +171,9 @@
             // 
             // timer1
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
-            // MainWindow
+            // MainWindow2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -192,8 +192,8 @@
             this.Controls.Add(this.password);
             this.Controls.Add(this.textBoxLogin);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainWindow";
-            this.Text = "LOTW QSL v1.9.0";
+            this.Name = "MainWindow2";
+            this.Text = "LOTW QSL v1.9.2rc1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

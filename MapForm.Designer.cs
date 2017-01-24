@@ -67,18 +67,8 @@
             // 
             this.comboBoxBand.FormattingEnabled = true;
             this.comboBoxBand.Items.AddRange(new object[] {
-            "6M",
-            "10M",
-            "12M",
-            "15M",
-            "17M",
-            "20M",
-            "30M",
-            "40M",
-            "60M",
-            "80M",
-            "160M",
             "All",
+            "Digital",
             "TriplePlay"});
             this.comboBoxBand.Location = new System.Drawing.Point(9, 12);
             this.comboBoxBand.Name = "comboBoxBand";
@@ -132,11 +122,11 @@
             // 
             this.labelAzimuth.AutoEllipsis = true;
             this.labelAzimuth.AutoSize = true;
-            this.labelAzimuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAzimuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelAzimuth.Location = new System.Drawing.Point(280, 7);
             this.labelAzimuth.MaximumSize = new System.Drawing.Size(64, 64);
             this.labelAzimuth.Name = "labelAzimuth";
-            this.labelAzimuth.Size = new System.Drawing.Size(59, 50);
+            this.labelAzimuth.Size = new System.Drawing.Size(44, 13);
             this.labelAzimuth.TabIndex = 8;
             this.labelAzimuth.Text = "Azimuth";
             // 

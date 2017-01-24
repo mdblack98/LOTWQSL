@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
 using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
@@ -11,12 +8,11 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LOTWQSL
 {
-    public partial class MainWindow : Form
+    public partial class MainWindow2 : Form
     {
         MapForm mapForm = new MapForm();
         GridForm gridForm = new GridForm();
@@ -28,9 +24,11 @@ namespace LOTWQSL
         string keeperFile = String.Empty;
         string appData = String.Empty;
         string errorStr = String.Empty;
+        string sinceLOTWStart = String.Empty;
         HashSet<string> history;
         HashSet<string> callsigns;
         public static HashSet<string> states; // List contains State/Band/Mode
+        public static HashSet<string> allWAS = new HashSet<string>();
         HashSet<string> dxcc;
         HashSet<string> countries;
         HashSet<string> prefixes;
@@ -43,8 +41,9 @@ namespace LOTWQSL
         int nqsls = 0;
         int ncallsigns = 0;
         Boolean mergeCalls = true; // if user does call+call login do we want to merge or keep separate?
+        Boolean qslMisMatchHeaderFlag = true;
 
-        public MainWindow()
+        public MainWindow2()
         {
             InitializeComponent();
             //InstallUpdateSyncWithInfo();
@@ -69,11 +68,11 @@ namespace LOTWQSL
             }
             mypassword = Properties.Settings.Default.password;
             mylogin = Properties.Settings.Default.login;
-            keeperFile = appData + "\\" + mylogin + ".txt";
+            keeperFile = appData + "\\" + mylogin.Replace('/','_') + ".txt";
             if (mylogin.Contains("+"))
             { // then this is a merged file
                 string[] tokens = Regex.Split(mylogin, "[@+]");
-                keeperFile = appData + "\\" + tokens[0] + ".txt";
+                keeperFile = appData + "\\" + tokens[0].Replace('/','_') + ".txt";
             }
 
             string keeperFileOld = appData + "\\lotwqsl.txt";
@@ -119,10 +118,11 @@ namespace LOTWQSL
                 this.Left = 0;
             }
             sinceLOTW = Properties.Settings.Default.lastLOTW;
+            //sinceLOTWStart = Properties.Settings.Default.
             textBoxSince.Text = sinceLOTW;
             textBoxLogin.Text = mylogin; // this will force keeperLoad()
             password.Text = mypassword;
-            keeperLoad(keeperFile);
+            KeeperLoad(keeperFile);
             timer1.Interval = 3000;
             timer1.Start();
             //Thread oThread = new Thread(new ThreadStart(checkForUpdate));
@@ -172,12 +172,14 @@ namespace LOTWQSL
             Properties.Settings.Default.Save();
         }
 
-        void addToPopular(string state,string callsign)
+        void AddToPopular(string state,string callsign)
         {
             if (!popularStates.ContainsKey(state))
             {
-                Dictionary<string,int> newdict = new Dictionary<string,int>();
-                newdict.Add(callsign, 1);
+                Dictionary<string, int> newdict = new Dictionary<string, int>
+                {
+                    { callsign, 1 }
+                };
                 popularStates.Add(state, newdict);
                 return;
             }
@@ -194,7 +196,7 @@ namespace LOTWQSL
             popularStates[state] = dict;
         }
 
-        void keeperLoad(string callsign)
+        void KeeperLoad(string callsign)
         {
             string lastDate = "19000101";
             try
@@ -217,13 +219,8 @@ namespace LOTWQSL
                 else
                 {
                     // Somehow we're getting dups...this is a temporary fix until figured out
-                    HashSet<string> uniqueLines = new HashSet<string>();
                     while ((line = file.ReadLine()) != null)
                     {
-                        if (!uniqueLines.Contains(line)) {
-                            uniqueLines.Add(line);
-                            ++nqsls;
-                        }
                         string thisDate = line.Substring(0, 8);
                         if (string.Compare(thisDate, lastDate) > 0)
                         {
@@ -231,6 +228,11 @@ namespace LOTWQSL
                             sinceLOTW = lastDate;
                         }
                         var tokens = line.Split(new[] { ',', '\r', '\n' });
+                        if (!line.Contains("none") && !allWAS.Contains(line))
+                        {
+                            allWAS.Add(tokens[1]);
+                        }
+                        ++nqsls;
                         history.Add(tokens[0]);
                         // [0] = "20131203 13:19 40M JT65 AJ4HW"
                         var tokens1 = tokens[0].Split(' ');
@@ -253,7 +255,7 @@ namespace LOTWQSL
                         tokens1 = tokens[1].Split(' ');
                         if (tokens1.Count() < 3) continue;
                         string state = tokens1[2];
-                        addToPopular(state,callsign);
+                        AddToPopular(state,callsign);
                         if ((!states.Contains(tokens[1])) && (!tokens[1].Equals("none")))
                         {
                             states.Add(tokens[1]);
@@ -320,8 +322,8 @@ namespace LOTWQSL
             textBoxSince.Text = lastDate.Substring(0, 4) + "-" + lastDate.Substring(4, 2) + "-" + lastDate.Substring(6, 2);
         }
 
-        private void checkForUpdate() {
-            int currentVersion = 190; // Matches 3-digit version number
+        private void CheckForUpdate() {
+            int currentVersion = 192; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -364,8 +366,9 @@ namespace LOTWQSL
             }
         }
 
-        private void doADIF(ref string responseData)
+        private void DoADIF(ref string responseData)
         {
+            qslMisMatchHeaderFlag = true;
             var lines = responseData.Split(new[] { '\r', '\n' });
             int nLines = 0;
             int nNew = 0;
@@ -385,11 +388,14 @@ namespace LOTWQSL
             this.Update();
             string QSODate = textBoxSince.Text;
             bool resetall = QSODate.Equals("1900-01-01") || QSODate.Substring(0,1)=="!";
+
             if (QSODate.Substring(0, 1) == "!")
             {
                 QSODate = QSODate.Substring(1);
                 textBoxSince.Text = QSODate;
             }
+            string QSODate2 = QSODate.Remove(7, 1); // we need this format to compare with the ADIF file
+            QSODate2 = QSODate2.Remove(4, 1);
 
             if (resetall)
             { // This indicates we're downloading the whole history so clear everything out
@@ -517,6 +523,17 @@ namespace LOTWQSL
                     int offset = s.IndexOf(">");
                     state = s.Substring(offset + 1);
                 }
+                if (s.Contains("<APP_LoTW_QSLMODE:"))
+                {
+                    if (qslMisMatchHeaderFlag)
+                    {
+                        richTextBox1.AppendText("ERRORMSG\tQSODATE\tTIME\tCALL\tYOURMODE\tTHEIRMODE\n");
+                        qslMisMatchHeaderFlag = false;
+                    }
+                    var tokens = s.Split(new[] { '>', '\r', '\n' });
+                    String qslmode = tokens[1];
+                    richTextBox1.AppendText("Mismatched mode\t"+qsodate+"\t"+timeon+"\t"+callsign+"\t"+mode+"  \t"+qslmode+"\n");
+                }
                 if (s.Contains("<COUNTRY:"))
                 {
                     int offset = s.IndexOf(">");
@@ -539,6 +556,11 @@ namespace LOTWQSL
                 }
                 if (s.Contains("<eor>"))
                 {
+                    String sinceLOTWCompare = sinceLOTW.Remove(7, 1);
+                    sinceLOTWCompare = sinceLOTWCompare.Remove(4, 1);
+                    int mycompare = qsodate.CompareTo(QSODate2);
+                    if (qsodate.CompareTo(QSODate2)<0)
+                        continue;
                     string key = qsodate + " " + timeon + " " + band + " " + mode + " " + callsign;
                     // Update our WAS info
                     string wasinfo = "none";
@@ -567,11 +589,11 @@ namespace LOTWQSL
                         history.Add(key);
                         if (!state.Equals(String.Empty) && country.Equals("USA"))
                         {
-                            country = String.Empty;
+                            //country = String.Empty;
                         }
                         if (verbose)
                         {
-                            richTextBox1.AppendText(key + " " + state + country + "\n");
+                            richTextBox1.AppendText(key + " " + state + " " + country + "\n");
                         }
                         updateFile = true;
                         if ((!prefix.Equals(String.Empty)) && (!prefixes.Contains(prefix)))
@@ -766,7 +788,7 @@ namespace LOTWQSL
             return sb.ToString();
         }
 
-        private void getLOTW()
+        private void GetLOTW()
         {
             sinceLOTW = textBoxSince.Text;
             string startDate = "";
@@ -774,6 +796,7 @@ namespace LOTWQSL
             {
                 sinceLOTW = sinceLOTW.Substring(1);
                 startDate = "&qso_qsorxsince=" + sinceLOTW;
+                richTextBox1.AppendText("New log starts at "+startDate);
             }
             else {
                 Type t = this.GetType();
@@ -828,13 +851,13 @@ namespace LOTWQSL
                 richTextBox1.AppendText("URL copied to clipboard\n");
                 try
                 {
-                    MainWindow.ActiveForm.Update();
+                    MainWindow2.ActiveForm.Update();
                 }
                 catch (Exception e)
                 {
                     errorStr = e.Message;
                 }
-                myWebClient client = new myWebClient();
+                MyWebClient client = new MyWebClient();
                 // Without adding a header it seemed like LOTW was not liking very many queries together while debugging
                 client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0");
                 System.Net.WebRequest.DefaultWebProxy = null;
@@ -844,7 +867,7 @@ namespace LOTWQSL
                     richTextBox1.AppendText("Request accepted...reading ADI data\n");
                     try
                     {
-                        MainWindow.ActiveForm.Update();
+                        MainWindow2.ActiveForm.Update();
                     }
                     catch (Exception e)
                     {
@@ -884,9 +907,12 @@ namespace LOTWQSL
                     richTextBox1.AppendText("\nLOTW returned an error\n");
                     richTextBox1.AppendText("Looks like wrong password\n");
                 }
-                else
+                else if (responseData.Contains("<APP_LoTW_NUMREC:1>0"))
                 {
-                    richTextBox1.AppendText("\nLOTW returned an unknown error\nDisplaying result in web browser\n");
+                    richTextBox1.AppendText("\nNo new QSLs\n");
+                }
+                else {
+                    richTextBox1.AppendText("\nUnknown LOTW error\nFile will display in browser\n");
                     string htmlfilepath = appData + "\\lotw.htm";
                     writer = new StreamWriter(htmlfilepath);
                     writer.Write(responseData);
@@ -896,7 +922,7 @@ namespace LOTWQSL
                 }
                 return;
             }
-            doADIF(ref responseData);
+            DoADIF(ref responseData);
             if (textBoxEnd.Text.Length == 10)
             {
                 textBoxSince.Text = textBoxEnd.Text;
@@ -904,12 +930,12 @@ namespace LOTWQSL
             }
         }
 
-        private void login_TextChanged(object sender, EventArgs e)
+        private void Login_TextChanged(object sender, EventArgs e)
         {
             // no action here -- wait until we leave
         }
 
-        private void login_Leave(object sender, EventArgs e)
+        private void Login_Leave(object sender, EventArgs e)
         {
             Properties.Settings.Default.login = mylogin;
             Properties.Settings.Default.Save();
@@ -935,30 +961,42 @@ namespace LOTWQSL
                 }
                 if (mergeCalls) // then we just keep the main login
                 {
-                    keeperFile = appData + "\\" + call1 + ".txt";
+                    keeperFile = appData + "\\" + call1.Replace('/','_') + ".txt";
                 }
                 else // we'll keep the call1+call2 in a separate log
                 {
-                    keeperFile = appData + "\\" + mylogin + ".txt";
+                    keeperFile = appData + "\\" + mylogin.Replace('/','_') + ".txt";
                 }
-                keeperLoad(keeperFile);
+                KeeperLoad(keeperFile);
                 Properties.Settings.Default.login = mylogin;
                 Properties.Settings.Default.Save();
             }
         }
 
-        private void password_TextChanged(object sender, EventArgs e)
+        private void Password_Get(String call, String passwordList)
+        {
+            passwordList = "w9mdb:mdb001;w9mdb@w9mdb:mdb002";
+            String[] tokens = passwordList.Split(';');
+            foreach (String s in tokens)
+            {
+
+            }
+        }
+
+        private void Password_TextChanged(object sender, EventArgs e)
         {
             mypassword = password.Text;
             Properties.Settings.Default.password = mypassword;
             Properties.Settings.Default.Save();
         }
 
-        private void sinceLOTWBox_Leave(object sender, EventArgs e)
+        private void SinceLOTWBox_Leave(object sender, EventArgs e)
         {
             try
             {
                 string tmp = textBoxSince.Text;
+                tmp = tmp.ToUpper();
+                textBoxSince.Text = tmp;
                 if (tmp.Substring(0,1)=="!") tmp=tmp.Substring(1);
                 DateTime dt = DateTime.Parse(tmp);
                 sinceLOTW = dt.ToString("yyyy-MM-dd");
@@ -970,7 +1008,7 @@ namespace LOTWQSL
             }
         }
 
-        private void buttonRefresh_Click(object sender, EventArgs e)
+        private void ButtonRefresh_Click(object sender, EventArgs e)
         {
             buttonRefresh.Enabled = false;
             if (textBoxSince.Text.Equals("1900-01-01"))
@@ -981,8 +1019,16 @@ namespace LOTWQSL
                     return;
                 }
             }
+            if (textBoxSince.Text.Substring(0,1).Equals("!"))
+            {
+                MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
+                if (MessageBox.Show("Exclamation point will set this date as the earliest date for all QSOs...are you sure?", "New Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return;
+                }
+            }
             Cursor.Current = Cursors.WaitCursor;
-            getLOTW();
+            GetLOTW();
             buttonRefresh.Enabled = true;
             if (gridForm.IsHandleCreated)
             {
@@ -991,7 +1037,7 @@ namespace LOTWQSL
             Cursor.Current = Cursors.Default;
         }
 
-        private void buttonHelp_Click(object sender, EventArgs e)
+        private void ButtonHelp_Click(object sender, EventArgs e)
         {
             //MessageBox.Show("Michael Black\nW9MDB\nmdblack98@yahoo.com\n"+appData);
             try
@@ -1006,7 +1052,7 @@ namespace LOTWQSL
             }
         }
 
-        private void buttonMap_Click(object sender, EventArgs e)
+        private void ButtonMap_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
             mapForm.Show();
@@ -1092,7 +1138,7 @@ namespace LOTWQSL
             }
         }
 
-        private void buttonGrid_Click(object sender, EventArgs e)
+        private void ButtonGrid_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
             gridForm.Show();
@@ -1104,7 +1150,7 @@ namespace LOTWQSL
             Cursor.Current = Cursors.Default;
         }
 
-        private void textBoxEnd_Leave(object sender, EventArgs e)
+        private void TextBoxEnd_Leave(object sender, EventArgs e)
         {
             if (textBoxEnd.Text.Length == 0) return;
             try
@@ -1120,10 +1166,10 @@ namespace LOTWQSL
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void Timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
-            Thread oThread = new Thread(new ThreadStart(checkForUpdate));
+            Thread oThread = new Thread(new ThreadStart(CheckForUpdate));
             oThread.Start();
         }
 
@@ -1149,7 +1195,7 @@ namespace LOTWQSL
          * */
     }
     
-    class myWebClient : WebClient
+    class MyWebClient : WebClient
     {
         protected override WebRequest GetWebRequest(Uri address)
         {

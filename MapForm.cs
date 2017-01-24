@@ -86,14 +86,13 @@ namespace LOTWQSL
                 this.Left = 0;
             }
             bandSelected = Properties.Settings.Default.mapBand;
-            comboBoxBand.SelectedItem = bandSelected;
+            comboBoxBand.SelectedIndex = comboBoxBand.FindStringExact(bandSelected);
             labelAzimuth.Font = fontAzimuthLabel;
             labelAzimuth.ForeColor = fontAzimuthColor;
             if (!azimuthOn)
             {
                 labelAzimuth.Visible = false;
             }
-            parseModes();
             System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
             toolTip1.SetToolTip(this.buttonConfig, "Configuration");
             try
@@ -119,6 +118,7 @@ namespace LOTWQSL
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
                 MessageBox.Show("StateLabels.mdb problem: " + ex.Message);
             }
+            parseModes();
         }
 
         private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)
@@ -143,20 +143,42 @@ namespace LOTWQSL
         {
             modeCanChange = false;
             modes.Clear();
+            modes.Add(MODEALL);
+            modes.Add("DIGITAL");
+            modes.Add("TRIPLEPLAY");
             bool modeMatch = false;
-            foreach (string s in MainWindow.states) // find all modes we have done
+            foreach (string s in MainWindow2.allWAS) // find all modes we have done
             {
                 string[] tokens = s.Split(new[] { ' ' });
-                if (!modes.Contains(tokens[1]) && (bandSelected.Equals(tokens[0]) || bandSelected.Equals(BANDALL)))
+                bool need = !modes.Contains(tokens[1]); // do we already have this mode?
+                if (!need) continue;
+                // Whether or not wee add a band to our combobox depends on both selections
+                // if bandSelect is All then we need all modes we see
+                need = bandSelected.Equals("All");
+                // If we match our band and we want all modes
+                need |= bandSelected.Equals(tokens[0]) && modeSelected.Equals("ALL");
+                // If we want all of everything
+                need |= bandSelected.Equals("All") && modeSelected.Equals("ALL");
+                //need |= (modeSelected.Equals("Any") || modeSelected.Equals("ALL")) || (bandSelected.Equals("All")  && modeSelected.Equals(tokens[1]));
+                //need |= bandSelected.Equals(tokens[0]) || bandSelected.Equals("All");
+                need |= bandSelected.Equals("Digital") || bandSelected.Equals("TriplePlay");
+                need |= bandSelected.Equals(tokens[0]) && !modes.Contains(tokens[1]);
+                //if (!modes.Contains(tokens[1]) && (modeSelected.Equals("Any") || modeSelected.Equals("ALL") || bandSelected.Equals(tokens[0]) || (bandSelected.Equals("All") && modeSelected.Equals(tokens[1])) || bandSelected.Equals("Digital") || bandSelected.Equals("TriplePlay")))
+                if (need)
                 {
                     //List<String> remainStates = statesRemain(bandStates);
                     modes.Add(tokens[1]);
-                    if (modeSelected.Equals(tokens[1]) || modeSelected.Equals(MODEALL)) modeMatch = true;
+                    if (modeSelected.Equals("Any") || modeSelected.Equals(tokens[1]) || modeSelected.Equals(MODEALL) || modeSelected.Equals("DIGITAL") || modeSelected.Equals("TRIPLEPLAY"))
+                        modeMatch = true;
                 }
             }
             if (!modeMatch)
             {
-                if (modes.Count == 0) modes.Add(MODEALL);
+                //if (modes.Count == 0)
+                //{
+                //    modes.Add(MODEALL);
+                //}
+                modes.Sort();
                 modeSelected = modes[0]; // if no such mode default to 1st
                 comboBoxMode.Items.Clear();
                 foreach (string s in modes)
@@ -170,12 +192,12 @@ namespace LOTWQSL
             if (modes.Count > 0)
             {
                 modes.Sort();
-                modes.Add(MODEALL);
-                modes.Add("DIGITAL");
                 comboBoxMode.Items.Clear();
                 comboBoxMode.SelectedIndex = -1;
+                modeIsWAS.Clear();
                 foreach (string s in modes)
                 {
+                    bandStates.Clear();
                     parseBandMode(bandSelected, s);
                     HashSet<String> remainStates = statesRemain(bandStates);
                     string modeStatus = s;
@@ -192,9 +214,12 @@ namespace LOTWQSL
                     if (s.Equals(modeSelected))
                     {
                         comboBoxMode.Text = s;
+                        comboBoxMode.SelectedIndex = comboBoxMode.Items.Count-1;
                     }
                 }
             }
+            comboBoxMode.SelectedIndex = comboBoxMode.FindStringExact(modeSelected);
+            comboBoxBand.SelectedIndex = comboBoxBand.FindStringExact(bandSelected);
             if (comboBoxMode.SelectedIndex < 0)
             {
                 comboBoxMode.SelectedIndex = 0;
@@ -203,18 +228,48 @@ namespace LOTWQSL
             modeCanChange = true;
         }
 
+        // Will add a band to comboBoxBand if it's not already there
+        private void addBand(string bandChk)
+        {
+            if (comboBoxBand.Items.Contains(bandChk)) return;
+            int i = 0;
+            int insertAt = -1;
+            int metersChk = int.Parse(bandChk.Split('M')[0]);
+            foreach (String band in comboBoxBand.Items)
+            {
+                if (band.Equals("All"))
+                {
+                    insertAt = i;
+                    break;
+                }
+                int meters = int.Parse(band.Split('M')[0]);
+                if (metersChk < meters)
+                {
+                    insertAt = i;
+                    break;
+                }
+                ++i;
+            }
+            if (insertAt >= 0)
+            {
+                comboBoxBand.Items.Insert(insertAt, bandChk);
+            }
+            comboBoxBand.SelectedIndex = comboBoxBand.FindStringExact(bandSelected);
+        }
+
         private void parseBand(string band)
         {
             bandStates.Clear();
             LOTWMode LOTWmode = new LOTWMode();
             //band = band.ToUpper();
-            foreach(string s in MainWindow.states) {
+            foreach(string s in MainWindow2.allWAS) {
                 string[] tokens = s.Split(new string[] { " "},StringSplitOptions.None);
+                string thisBand = tokens[0];
                 string mode = tokens[1];
                 string state = tokens[2];
                 LOTWmode.addCallsign(state, mode);
                 bool isTriplePlay = LOTWmode.isTriplePlay(state);
-                if (tokens[0].Equals(band) || band.Equals(BANDALL) || (band.Equals(BANDTRIPLEPLAY)&&isTriplePlay))
+                if (thisBand.Equals(band) || band.Equals(BANDALL) || (band.Equals(BANDTRIPLEPLAY)&&isTriplePlay))
                 {
                     string mystate = s.Substring(s.Length-2);
                     if (!bandStates.Contains(mystate))
@@ -222,29 +277,31 @@ namespace LOTWQSL
                         bandStates.Add(mystate);
                     }
                 }
+                addBand(thisBand);
             }
         }
 
         private void parseBandMode(string band, string mode)
         {
-            bandStates.Clear();
+            LOTWMode LOTWmode = new LOTWMode();
+            if ((!mode.Equals("ALL") && !band.Equals("All")) && (!band.Equals("Digital") && !band.Equals("TriplePlay")))
+            {
+                bandStates.Clear();
+            }
             //band = band.ToUpper();
             mode = " " + mode + " ";
-            foreach (string s in MainWindow.states)
+            foreach (string s in MainWindow2.allWAS)
             {
                 string[] tokens = s.Split(new string[] { " " }, StringSplitOptions.None);
                 string myband = tokens[0];
                 string mymode = tokens[1];
                 string mystate = tokens[2];
-                if (myband.Equals("6M"))
-                {
-                    myband = "6M";
-                }
-                //string myband = s.Substring(0, band.Length);
+                LOTWmode.addCallsign(mystate, mymode);
                 Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
-                Boolean isDigitalMode = mode.Equals(" DIGITAL ") && (!mode.Equals("SSB")) && (!mode.Equals("AM")) && (!mode.Equals("CW"));
-                if ( (bandOK && modeOK) || (bandOK && isDigitalMode))
+                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && (band.Contains("Digital") || mode.Contains("DIGITAL"));
+                Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate) && band.Contains("TriplePlay");
+                if ((bandOK && modeOK) || (isDigitalMode && bandOK) || isTriplePlay)
                 {
                     string state = s.Substring(s.Length - 2);
                     if (!bandStates.Contains(state))
@@ -253,6 +310,7 @@ namespace LOTWQSL
                     }
                 }
             }
+            //MessageBox.Show("Bandstates=" + bandStates.Count);
         }
 
         private void Form2_Shown(object sender, EventArgs e)
@@ -316,12 +374,15 @@ namespace LOTWQSL
             statesLabeled.Clear();
             if (modeSelected.Contains(MODEALL))
             {  // then for WAS mode
+                //parseModes();
+                bandStates.Clear();
                 parseBand(comboBoxBand.Text);
-                parseModes();
             }
             else // by selected mode
             {
                 //string[] myMode = modeSelected.Split(new string[] {" "},StringSplitOptions.None);
+                parseBand(comboBoxBand.Text); // to fill up the modes we've done
+                bandStates.Clear();
                 parseBandMode(comboBoxBand.Text, modeSelected);
             }
             HashSet<String> remainStates = statesRemain(bandStates);
@@ -403,6 +464,8 @@ namespace LOTWQSL
         {
             button1.Enabled = false;
             bandSelected = comboBoxBand.Text;
+            if (bandSelected.Equals("TriplePlay") || bandSelected.Equals("Digital")) comboBoxMode.Enabled = false;
+            else comboBoxMode.Enabled = true;
             parseModes();
             Properties.Settings.Default.mapBand = bandSelected;
             Properties.Settings.Default.Save();
@@ -413,6 +476,8 @@ namespace LOTWQSL
 
         private void buttonRedraw_Click(object sender, EventArgs e)
         {
+            parseModes();
+            bandStates.Clear();
             mapBox1.Invalidate();
             mapBox1.Refresh();
         }
@@ -500,6 +565,7 @@ namespace LOTWQSL
             if (modeCanChange)
             {
                 modeSelected = comboBoxMode.Text.Split(new string[] {" "},StringSplitOptions.None)[0];
+                bandStates.Clear();
                 parseBandMode(bandSelected, modeSelected);
                 Properties.Settings.Default.Mode = modeSelected;
                 Properties.Settings.Default.Save();

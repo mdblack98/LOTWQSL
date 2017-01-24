@@ -346,17 +346,5 @@ namespace LOTWQSL.Properties {
                 this["QSODate"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
-        public string StartDate {
-            get {
-                return ((string)(this["StartDate"]));
-            }
-            set {
-                this["StartDate"] = value;
-            }
-        }
     }
 }
