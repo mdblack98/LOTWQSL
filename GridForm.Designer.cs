@@ -166,9 +166,9 @@
             this.dataGridView1.RowHeadersWidth = 70;
             this.dataGridView1.Size = new System.Drawing.Size(512, 297);
             this.dataGridView1.TabIndex = 7;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellDoubleClick);
             // 
             // M6
             // 
@@ -617,7 +617,7 @@
             this.comboBoxMode.Name = "comboBoxMode";
             this.comboBoxMode.Size = new System.Drawing.Size(72, 21);
             this.comboBoxMode.TabIndex = 8;
-            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxMode_SelectedIndexChanged_1);
+            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged_1);
             // 
             // buttonRefresh
             // 
@@ -627,7 +627,7 @@
             this.buttonRefresh.TabIndex = 9;
             this.buttonRefresh.Text = "Refresh";
             this.buttonRefresh.UseVisualStyleBackColor = true;
-            this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
+            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
             // 
             // buttonUnhide
             // 
@@ -638,7 +638,7 @@
             this.buttonUnhide.Text = "Unhide";
             this.buttonUnhide.UseVisualStyleBackColor = true;
             this.buttonUnhide.Visible = false;
-            this.buttonUnhide.Click += new System.EventHandler(this.buttonUnhide_Click);
+            this.buttonUnhide.Click += new System.EventHandler(this.ButtonUnhide_Click);
             // 
             // GridForm
             // 

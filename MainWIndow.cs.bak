@@ -90,7 +90,7 @@ namespace LOTWQSL
                 }
             }
             history = new HashSet<string>();
-            //states = new HashSet<string>();
+            states = new HashSet<string>();
             dxcc = new HashSet<string>();
             countries = new HashSet<string>();
             prefixes = new HashSet<string>();
@@ -199,12 +199,6 @@ namespace LOTWQSL
         void KeeperLoad(string callsign)
         {
             string lastDate = "19000101";
-            allWAS.Clear();
-            countries.Clear();
-            history.Clear();
-            callsigns.Clear();
-            popularStates.Clear();
-            prefixes.Clear();
             try
             {
                 System.IO.StreamReader file = new System.IO.StreamReader(keeperFile);
@@ -262,10 +256,10 @@ namespace LOTWQSL
                         if (tokens1.Count() < 3) continue;
                         string state = tokens1[2];
                         AddToPopular(state,callsign);
-                        //if ((!states.Contains(tokens[1])) && (!tokens[1].Equals("none")))
-                        //{
-                        //    states.Add(tokens[1]);
-                        //}
+                        if ((!states.Contains(tokens[1])) && (!tokens[1].Equals("none")))
+                        {
+                            states.Add(tokens[1]);
+                        }
                         if (!prefixes.Contains(tokens[3]))
                         {
                             prefixes.Add(tokens[3]);
@@ -296,8 +290,7 @@ namespace LOTWQSL
                 //richTextBox1.AppendText(dxcc.Count() + " dxcc entries\n");
                 richTextBox1.AppendText(countries.Count() + " countries\n");
                 ncallsigns = callsigns.Count();
-                //nstates = states.Count();
-                nstates = allWAS.Count();
+                nstates = states.Count();
                 nprefixes = prefixes.Count();
                 ndxcc = dxcc.Count();
                 ncountries = countries.Count();
@@ -330,7 +323,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 193; // Matches 3-digit version number
+            int currentVersion = 192; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -422,8 +415,7 @@ namespace LOTWQSL
                 }
                 countries.Clear();
                 dxcc.Clear();
-                //states.Clear();
-                allWAS.Clear();
+                states.Clear();
                 history.Clear();
                 prefixes.Clear();
                 callsigns.Clear();
@@ -579,7 +571,7 @@ namespace LOTWQSL
                     if (!state.Equals(String.Empty) && (country.Equals("USA") || country.Equals("ALASKA") || country.Equals("HAWAII")))
                     {
                         wasinfo = band + " " + mode + " " + state;
-                        if (!allWAS.Contains(wasinfo))
+                        if (!states.Contains(wasinfo))
                         {
                             MainWindow2.allWAS.Add(wasinfo);
                             //states.Add(wasinfo);
@@ -633,7 +625,7 @@ namespace LOTWQSL
                             richTextBox1.AppendText("  New WAS: " + wasinfo + "\n");
                         }
                         MapForm form2 = new MapForm();
-                        HashSet<string> remain = form2.StatesRemain(allWAS);
+                        HashSet<string> remain = form2.statesRemain(states);
                         form2.Dispose();
                         if (remain.Count == 0)
                         {
@@ -696,8 +688,8 @@ namespace LOTWQSL
             bumpup = (nprefixes == prefixes.Count()) ? "+0" : ("+" + (prefixes.Count() - nprefixes));
             richTextBox1.AppendText(prefixes.Count() + " prefix entries\t" + bumpup + "\n");
 
-            bumpup = (nstates == allWAS.Count()) ? "+0" : ("+" + (allWAS.Count() - nstates));
-            richTextBox1.AppendText(allWAS.Count() + " was entries\t" + bumpup + "\n");
+            bumpup = (nstates == states.Count()) ? "+0" : ("+" + (states.Count() - nstates));
+            richTextBox1.AppendText(states.Count() + " was entries\t" + bumpup + "\n");
 
             //bumpup = (ndxcc == dxcc.Count()) ? "+0" : ("+" + (dxcc.Count() - ndxcc));
             //richTextBox1.AppendText(dxcc.Count() + " dxcc entries\t" + bumpup + "\n");
@@ -706,7 +698,7 @@ namespace LOTWQSL
             richTextBox1.AppendText(countries.Count() + " country entries\t" + bumpup + "\n");
 
             nqsls = nLines;
-            nstates = allWAS.Count();
+            nstates = states.Count();
             nprefixes = prefixes.Count();
             ndxcc = dxcc.Count();
             ncountries = countries.Count();

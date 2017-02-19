@@ -193,7 +193,7 @@
             this.Controls.Add(this.textBoxLogin);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainWindow2";
-            this.Text = "LOTW QSL v1.9.2rc1";
+            this.Text = "LOTW QSL v1.9.3";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

@@ -59,9 +59,9 @@
             this.mapBox1.TabIndex = 0;
             this.mapBox1.Text = "mapBox1";
             this.mapBox1.WheelZoomMagnitude = -2D;
-            this.mapBox1.MouseMove += new SharpMap.Forms.MapBox.MouseEventHandler(this.mapBox1_MouseMove);
-            this.mapBox1.Click += new System.EventHandler(this.mapBox1_Click);
-            this.mapBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.mapBox1_Paint);
+            this.mapBox1.MouseMove += new SharpMap.Forms.MapBox.MouseEventHandler(this.MapBox1_MouseMove);
+            this.mapBox1.Click += new System.EventHandler(this.MapBox1_Click);
+            this.mapBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.MapBox1_Paint);
             // 
             // comboBoxBand
             // 
@@ -74,7 +74,7 @@
             this.comboBoxBand.Name = "comboBoxBand";
             this.comboBoxBand.Size = new System.Drawing.Size(72, 21);
             this.comboBoxBand.TabIndex = 1;
-            this.comboBoxBand.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.comboBoxBand.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
             // button1
             // 
@@ -84,7 +84,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "Redraw";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.buttonRedraw_Click);
+            this.button1.Click += new System.EventHandler(this.ButtonRedraw_Click);
             // 
             // label1
             // 
@@ -115,8 +115,8 @@
             this.comboBoxMode.Name = "comboBoxMode";
             this.comboBoxMode.Size = new System.Drawing.Size(71, 21);
             this.comboBoxMode.TabIndex = 2;
-            this.comboBoxMode.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.comboBox1_DrawItem);
-            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxMode_SelectedIndexChanged);
+            this.comboBoxMode.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBox1_DrawItem);
+            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged);
             // 
             // labelAzimuth
             // 
@@ -138,7 +138,7 @@
             this.buttonConfig.TabIndex = 9;
             this.buttonConfig.Text = "!";
             this.buttonConfig.UseVisualStyleBackColor = true;
-            this.buttonConfig.Click += new System.EventHandler(this.buttonConfig_Click);
+            this.buttonConfig.Click += new System.EventHandler(this.ButtonConfig_Click);
             // 
             // MapForm
             // 

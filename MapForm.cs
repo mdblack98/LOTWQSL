@@ -50,7 +50,7 @@ namespace LOTWQSL
             bandStates = new HashSet<string>();
             statesLabeled = new HashSet<string>();
             modes = new List<string>();
-            statesLoad();
+            StatesLoad();
             try
             {
 
@@ -100,13 +100,15 @@ namespace LOTWQSL
                 vlay.DataSource = new SharpMap.Data.Providers.ShapeFile("tl_2013_us_state.shp", true);
                 vlay.Theme = new SharpMap.Rendering.Thematics.CustomTheme(GetStyleForShape);
 
-                llay = new SharpMap.Layers.LabelLayer("STUSPS");
-                llay.DataSource = new SharpMap.Data.Providers.ShapeFile("statelabels.shp", true);
-                llay.LabelStringDelegate = LabelDelegate;
-                llay.Theme = new SharpMap.Rendering.Thematics.CustomTheme(GetStyleForStateLabel);
-                llay.Enabled = true;
-                llay.LabelColumn = "Label";
-                llay.Style = new SharpMap.Styles.LabelStyle();
+                llay = new SharpMap.Layers.LabelLayer("STUSPS")
+                {
+                    DataSource = new SharpMap.Data.Providers.ShapeFile("statelabels.shp", true),
+                    LabelStringDelegate = LabelDelegate,
+                    Theme = new SharpMap.Rendering.Thematics.CustomTheme(GetStyleForStateLabel),
+                    Enabled = true,
+                    LabelColumn = "Label",
+                    Style = new SharpMap.Styles.LabelStyle()
+                };
                 llay.Style.CollisionDetection = true;
                 llay.Style.CollisionBuffer = new SizeF(20, 20);
                 llay.Style.ForeColor = Color.Black;
@@ -118,10 +120,10 @@ namespace LOTWQSL
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
                 MessageBox.Show("StateLabels.mdb problem: " + ex.Message);
             }
-            parseModes();
+            ParseModes();
         }
 
-        private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)
+        private void ComboBox1_DrawItem(object sender, DrawItemEventArgs e)
         {
             // Draw the background 
             e.DrawBackground();
@@ -139,7 +141,7 @@ namespace LOTWQSL
             // Draw the text    
             e.Graphics.DrawString(mode, myfont, brush, e.Bounds.X, e.Bounds.Y);
         }
-        private void parseModes()
+        private void ParseModes()
         {
             modeCanChange = false;
             modes.Clear();
@@ -198,8 +200,8 @@ namespace LOTWQSL
                 foreach (string s in modes)
                 {
                     bandStates.Clear();
-                    parseBandMode(bandSelected, s);
-                    HashSet<String> remainStates = statesRemain(bandStates);
+                    ParseBandMode(bandSelected, s);
+                    HashSet<String> remainStates = StatesRemain(bandStates);
                     string modeStatus = s;
                     if (remainStates.Count == 0)
                     {
@@ -229,7 +231,7 @@ namespace LOTWQSL
         }
 
         // Will add a band to comboBoxBand if it's not already there
-        private void addBand(string bandChk)
+        private void AddBand(string bandChk)
         {
             if (comboBoxBand.Items.Contains(bandChk)) return;
             int i = 0;
@@ -257,7 +259,7 @@ namespace LOTWQSL
             comboBoxBand.SelectedIndex = comboBoxBand.FindStringExact(bandSelected);
         }
 
-        private void parseBand(string band)
+        private void ParseBand(string band)
         {
             bandStates.Clear();
             LOTWMode LOTWmode = new LOTWMode();
@@ -277,11 +279,11 @@ namespace LOTWQSL
                         bandStates.Add(mystate);
                     }
                 }
-                addBand(thisBand);
+                AddBand(thisBand);
             }
         }
 
-        private void parseBandMode(string band, string mode)
+        private void ParseBandMode(string band, string mode)
         {
             LOTWMode LOTWmode = new LOTWMode();
             if ((!mode.Equals("ALL") && !band.Equals("All")) && (!band.Equals("Digital") && !band.Equals("TriplePlay")))
@@ -329,8 +331,10 @@ namespace LOTWQSL
 
         private SharpMap.Styles.LabelStyle GetStyleForStateLabel(SharpMap.Data.FeatureDataRow row)
         {
-            SharpMap.Styles.LabelStyle style = new SharpMap.Styles.LabelStyle();
-            style.ForeColor = fontStateColor;
+            SharpMap.Styles.LabelStyle style = new SharpMap.Styles.LabelStyle()
+            {
+                ForeColor = fontStateColor
+            };
             if (row.ItemArray[3].Equals("HI"))
             {
                 style.ForeColor = Color.Black;
@@ -367,7 +371,7 @@ namespace LOTWQSL
             return style;
         }
 
-        private void mapBox1_Paint(object sender, PaintEventArgs e)
+        private void MapBox1_Paint(object sender, PaintEventArgs e)
         {
             if (MouseButtons == MouseButtons.Left) return;
             //parseModes();
@@ -376,16 +380,16 @@ namespace LOTWQSL
             {  // then for WAS mode
                 //parseModes();
                 bandStates.Clear();
-                parseBand(comboBoxBand.Text);
+                ParseBand(comboBoxBand.Text);
             }
             else // by selected mode
             {
                 //string[] myMode = modeSelected.Split(new string[] {" "},StringSplitOptions.None);
-                parseBand(comboBoxBand.Text); // to fill up the modes we've done
+                ParseBand(comboBoxBand.Text); // to fill up the modes we've done
                 bandStates.Clear();
-                parseBandMode(comboBoxBand.Text, modeSelected);
+                ParseBandMode(comboBoxBand.Text, modeSelected);
             }
-            HashSet<String> remainStates = statesRemain(bandStates);
+            HashSet<String> remainStates = StatesRemain(bandStates);
             mapBox1.Map.Layers.Clear();
             mapBox1.Map.Layers.Add(vlay);
             mapBox1.Map.Layers.Add(llay);
@@ -446,12 +450,14 @@ namespace LOTWQSL
               new AxisInfo("Lat", AxisOrientationEnum.North));
 
             //Create UTM projection
-            List<ProjectionParameter> parameters = new List<ProjectionParameter>();
-            parameters.Add(new ProjectionParameter("latitude_of_origin", 0));
-            parameters.Add(new ProjectionParameter("central_meridian", -183 + 6 * utmZone));
-            parameters.Add(new ProjectionParameter("scale_factor", 0.9996));
-            parameters.Add(new ProjectionParameter("false_easting", 500000));
-            parameters.Add(new ProjectionParameter("false_northing", 0.0));
+            List<ProjectionParameter> parameters = new List<ProjectionParameter>
+            {
+                new ProjectionParameter("latitude_of_origin", 0),
+                new ProjectionParameter("central_meridian", -183 + 6 * utmZone),
+                new ProjectionParameter("scale_factor", 0.9996),
+                new ProjectionParameter("false_easting", 500000),
+                new ProjectionParameter("false_northing", 0.0)
+            };
             IProjection projection = cFac.CreateProjection("Transverse Mercator", "Transverse Mercator", parameters);
 
             return cFac.CreateProjectedCoordinateSystem("WGS 84 / UTM zone " + utmZone.ToString() + "N", gcs,
@@ -460,13 +466,13 @@ namespace LOTWQSL
         }
 
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             button1.Enabled = false;
             bandSelected = comboBoxBand.Text;
             if (bandSelected.Equals("TriplePlay") || bandSelected.Equals("Digital")) comboBoxMode.Enabled = false;
             else comboBoxMode.Enabled = true;
-            parseModes();
+            ParseModes();
             Properties.Settings.Default.mapBand = bandSelected;
             Properties.Settings.Default.Save();
             mapBox1.PreviewMode = SharpMap.Forms.MapBox.PreviewModes.Fast;
@@ -474,9 +480,9 @@ namespace LOTWQSL
             mapBox1.Refresh();
         }
 
-        private void buttonRedraw_Click(object sender, EventArgs e)
+        private void ButtonRedraw_Click(object sender, EventArgs e)
         {
-            parseModes();
+            ParseModes();
             bandStates.Clear();
             mapBox1.Invalidate();
             mapBox1.Refresh();
@@ -491,63 +497,65 @@ namespace LOTWQSL
             Hide();
             e.Cancel = true;
         }
-        private void statesLoad()
+        private void StatesLoad()
         {
-            states = new List<string>();
-            states.Add("AL");
-            states.Add("AK");
-            states.Add("AZ");
-            states.Add("AR");
-            states.Add("CA");
-            states.Add("CO");
-            states.Add("CT");
-            //states.Add("DC"); // DC does not count for LOTW
-            states.Add("DE");
-            states.Add("FL");
-            states.Add("GA");
-            states.Add("HI");
-            states.Add("ID");
-            states.Add("IL");
-            states.Add("IN");
-            states.Add("IA");
-            states.Add("KS");
-            states.Add("KY");
-            states.Add("LA");
-            states.Add("ME");
-            states.Add("MD");
-            states.Add("MA");
-            states.Add("MI");
-            states.Add("MN");
-            states.Add("MS");
-            states.Add("MO");
-            states.Add("MT");
-            states.Add("NE");
-            states.Add("NV");
-            states.Add("NH");
-            states.Add("NJ");
-            states.Add("NM");
-            states.Add("NY");
-            states.Add("NC");
-            states.Add("ND");
-            states.Add("OH");
-            states.Add("OK");
-            states.Add("OR");
-            states.Add("PA");
-            states.Add("RI");
-            states.Add("SC");
-            states.Add("SD");
-            states.Add("TN");
-            states.Add("TX");
-            states.Add("UT");
-            states.Add("VT");
-            states.Add("VA");
-            states.Add("WA");
-            states.Add("WV");
-            states.Add("WI");
-            states.Add("WY");
+            states = new List<string>
+            {
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                //states.Add("DC"); // DC does not count for LOTW
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+            };
             states.Sort();
         }
-        public HashSet<string> statesRemain(HashSet<string> myStates)
+        public HashSet<string> StatesRemain(HashSet<string> myStates)
         {
             HashSet<string> remain = new HashSet<string>();
             foreach(string s in states)
@@ -560,13 +568,13 @@ namespace LOTWQSL
             return remain;
         }
 
-        private void comboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (modeCanChange)
             {
                 modeSelected = comboBoxMode.Text.Split(new string[] {" "},StringSplitOptions.None)[0];
                 bandStates.Clear();
-                parseBandMode(bandSelected, modeSelected);
+                ParseBandMode(bandSelected, modeSelected);
                 Properties.Settings.Default.Mode = modeSelected;
                 Properties.Settings.Default.Save();
                 button1.Enabled = false;
@@ -576,7 +584,7 @@ namespace LOTWQSL
             }
         }
 
-        private double azimuth(double lat,double lon)
+        private double Azimuth(double lat,double lon)
         {
             double phi1 = myLat * (Math.PI/180);
             double phi2 = lat * (Math.PI/180);
@@ -591,17 +599,17 @@ namespace LOTWQSL
             return azimuth;
         }
 
-        private void mapBox1_MouseMove(GeoAPI.Geometries.Coordinate worldPos, MouseEventArgs imagePos)
+        private void MapBox1_MouseMove(GeoAPI.Geometries.Coordinate worldPos, MouseEventArgs imagePos)
         {
             //string x = worldPos.X.ToString(".00000");
             //string y = worldPos.Y.ToString(".00000");
             //labelAzimth.Text = x + "/" + y;
             if (myLat != 0.0 || myLon != 0.0) {
-                labelAzimuth.Text = "Azimuth "+azimuth(worldPos.Y, worldPos.X).ToString(".0");
+                labelAzimuth.Text = "Azimuth "+Azimuth(worldPos.Y, worldPos.X).ToString(".0");
             }
         }
 
-        private void buttonConfig_Click(object sender, EventArgs e)
+        private void ButtonConfig_Click(object sender, EventArgs e)
         {
             ConfigForm configForm = new ConfigForm();
             configForm.ShowDialog();
@@ -633,7 +641,7 @@ namespace LOTWQSL
             mapBox1.Refresh();
         }
 
-        private void mapBox1_Click(object sender, EventArgs e)
+        private void MapBox1_Click(object sender, EventArgs e)
         {
 
         }

@@ -37,13 +37,13 @@ namespace LOTWQSL
             modes = new HashSet<string>();
             modeIsWAS = new Dictionary<string, bool>();
             //countries = new SortedDictionary<string, int>();
-            statesLoad();
+            StatesLoad();
             //countriesLoad();
         }
 
         private void GridForm_Load(object sender, EventArgs e)
         {
-            bandsLoad();
+            BandsLoad();
             this.Top = Properties.Settings.Default.GridRestoreBounds.Top;
             this.Left = Properties.Settings.Default.GridRestoreBounds.Left;
             this.Height = Properties.Settings.Default.GridRestoreBounds.Height;
@@ -85,13 +85,13 @@ namespace LOTWQSL
             dataGridView1.Rows.Add("");
             dataGridView1.Rows[i].HeaderCell.Value = "Total";
              */
-            parseModes();
+            ParseModes();
             //modeSelected = Properties.Settings.Default.GridMode;
             //comboBoxMode.SelectedItem = modeSelected;
-            fillGrid();
+            FillGrid();
         }
 
-        void fixColRow()
+        void FixColRow()
         {
             string hiding = Properties.Settings.Default.GridHide;
             string[] ahiding = hiding.Split(';');
@@ -108,7 +108,7 @@ namespace LOTWQSL
             Properties.Settings.Default.Save();
         }
 
-        private void hideGridItems()
+        private void HideGridItems()
         {
             // Now restore our hidden cols & rows
             try
@@ -142,84 +142,88 @@ namespace LOTWQSL
             }
         }
 
-        private void bandsLoad()
+        private void BandsLoad()
         {
-            bands = new List<string>();
-            //bands.Add("6M");
-            //bands.Add("10M");
-            //bands.Add("12M");
-            //bands.Add("15M");
-            //bands.Add("17M");
-            //bands.Add("20M");
-            //bands.Add("30M");
-            //bands.Add("40M");
-            //bands.Add("60M");
-            //bands.Add("80M");
-            //bands.Add("160M");
-            bands.Add("ALL");
-            bands.Add("Digital");
-            bands.Add("TriplePlay");
+            bands = new List<string>
+            {
+                //bands.Add("6M");
+                //bands.Add("10M");
+                //bands.Add("12M");
+                //bands.Add("15M");
+                //bands.Add("17M");
+                //bands.Add("20M");
+                //bands.Add("30M");
+                //bands.Add("40M");
+                //bands.Add("60M");
+                //bands.Add("80M");
+                //bands.Add("160M");
+                "ALL",
+                "Digital",
+                "TriplePlay"
+            };
             //parseModes(); // this will add all used bands
         }
 
-        private void statesLoad()
+        private void StatesLoad()
         {
-            states = new List<string>();
-            states.Add("AL");
-            states.Add("AK");
-            states.Add("AZ");
-            states.Add("AR");
-            states.Add("CA");
-            states.Add("CO");
-            states.Add("CT");
-            states.Add("DC");
-            states.Add("DE");
-            states.Add("FL");
-            states.Add("GA");
-            states.Add("HI");
-            states.Add("ID");
-            states.Add("IL");
-            states.Add("IN");
-            states.Add("IA");
-            states.Add("KS");
-            states.Add("KY");
-            states.Add("LA");
-            states.Add("ME");
-            states.Add("MD");
-            states.Add("MA");
-            states.Add("MI");
-            states.Add("MN");
-            states.Add("MS");
-            states.Add("MO");
-            states.Add("MT");
-            states.Add("NE");
-            states.Add("NV");
-            states.Add("NH");
-            states.Add("NJ");
-            states.Add("NM");
-            states.Add("NY");
-            states.Add("NC");
-            states.Add("ND");
-            states.Add("OH");
-            states.Add("OK");
-            states.Add("OR");
-            states.Add("PA");
-            states.Add("RI");
-            states.Add("SC");
-            states.Add("SD");
-            states.Add("TN");
-            states.Add("TX");
-            states.Add("UT");
-            states.Add("VT");
-            states.Add("VA");
-            states.Add("WA");
-            states.Add("WV");
-            states.Add("WI");
-            states.Add("WY");
+            states = new List<string>
+            {
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+            };
             states.Sort();
         }
 
-        public HashSet<string> statesRemain(HashSet<string> myStates)
+        public HashSet<string> StatesRemain(HashSet<string> myStates)
         {
             HashSet<string> remain = new HashSet<string>();
             foreach (string s in states)
@@ -273,20 +277,20 @@ namespace LOTWQSL
             }
         }
         */
-        public void fillGrid()
+        public void FillGrid()
         {
             Cursor.Current = Cursors.WaitCursor;
             string mode = comboBoxMode.GetItemText(comboBoxMode.SelectedItem);
             bool stategrid = true;
             foreach (string band in bands)
             {
-                parseBandMode(band, mode);
+                ParseBandMode(band, mode);
                 if (stategrid)
                 {
                     foreach (string state in states)
                     {
-                        HashSet<string> statesRemaining = statesRemain(bandStates);
-                        fillGrid(true,band, statesRemaining);
+                        HashSet<string> statesRemaining = StatesRemain(bandStates);
+                        FillGrid(true,band, statesRemaining);
                     }
                 }
                     /*  Not implemented
@@ -299,12 +303,12 @@ namespace LOTWQSL
                 }
                      */
             }
-            hideGridItems();
-            loadToolTips();
+            HideGridItems();
+            LoadToolTips();
             Cursor.Current = Cursors.Default;
         }
 
-        private void fillGridold(Boolean byBand, string s, HashSet<string> statesRemaining)
+        private void FillGridold(Boolean byBand, string s, HashSet<string> statesRemaining)
         {
             byBand = true;
             int iCell = -1;
@@ -367,8 +371,10 @@ namespace LOTWQSL
                         else
                         {
                             row.Cells[iCell].Value = worked;
-                            DataGridViewCellStyle style = new DataGridViewCellStyle();
-                            style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+                            DataGridViewCellStyle style = new DataGridViewCellStyle()
+                            {
+                                Font = new Font(dataGridView1.Font, FontStyle.Bold)
+                            };
                             row.Cells[iCell].Style.Font = style.Font;
                             row.Cells[iCell].Style.BackColor = Color.Red;
                             if (worked >= 50) row.Cells[iCell].Style.BackColor = Color.LightGreen;
@@ -377,10 +383,10 @@ namespace LOTWQSL
                     }
                 }
             }
-            loadToolTips();
+            LoadToolTips();
         }
 
-        private void fillGridRowByState(int iCell, HashSet<string> statesRemaining)
+        private void FillGridRowByState(int iCell, HashSet<string> statesRemaining)
         {
             int worked = 0;
             //foreach (DataGridViewColumn col in dataGridView1.Columns) 
@@ -408,8 +414,10 @@ namespace LOTWQSL
                         else
                         {
                             row.Cells[iCell].Value = worked;
-                            DataGridViewCellStyle style = new DataGridViewCellStyle();
-                            style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+                            DataGridViewCellStyle style = new DataGridViewCellStyle()
+                            {
+                                Font = new Font(dataGridView1.Font, FontStyle.Bold)
+                            };
                             row.Cells[iCell].Style.Font = style.Font;
                             row.Cells[iCell].Style.BackColor = Color.Red;
                             if (worked >= 50) row.Cells[iCell].Style.BackColor = Color.LightGreen;
@@ -420,7 +428,7 @@ namespace LOTWQSL
             }
         }
 
-        private void fillGridRowByBand(int iCell, HashSet<string> statesRemaining)
+        private void FillGridRowByBand(int iCell, HashSet<string> statesRemaining)
         {
             int worked = 0;
             DataGridViewRow row = dataGridView1.Rows[iCell];
@@ -449,8 +457,10 @@ namespace LOTWQSL
                         else
                         {
                             row.Cells[iCell].Value = worked;
-                            DataGridViewCellStyle style = new DataGridViewCellStyle();
-                            style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+                            DataGridViewCellStyle style = new DataGridViewCellStyle()
+                            {
+                                Font = new Font(dataGridView1.Font, FontStyle.Bold)
+                            };
                             row.Cells[iCell].Style.Font = style.Font;
                             row.Cells[iCell].Style.BackColor = Color.Red;
                             if (worked >= 50) row.Cells[iCell].Style.BackColor = Color.LightGreen;
@@ -461,7 +471,7 @@ namespace LOTWQSL
             }
         }
 
-        private void fillGrid(Boolean byBand, string s, HashSet<string> statesRemaining)
+        private void FillGrid(Boolean byBand, string s, HashSet<string> statesRemaining)
         {
             byBand = gridHeadersColumn == BANDS;
             int iCell=-1;
@@ -526,17 +536,17 @@ namespace LOTWQSL
             }
             if (byBand)
             {
-                fillGridRowByState(iCell, statesRemaining);
+                FillGridRowByState(iCell, statesRemaining);
             }
             else
             {
-                fillGridRowByBand(iCell, statesRemaining);
+                FillGridRowByBand(iCell, statesRemaining);
             }
             //hideGridItems();
             //loadToolTips();
         }
 
-        private void parseModes()
+        private void ParseModes()
         {
             modes.Clear();
             comboBoxMode.Items.Clear();
@@ -546,12 +556,12 @@ namespace LOTWQSL
             //modes.Add("TRIPLEPLAY");
             //comboBoxMode.Items.Add("DIGITAL");
             //comboBoxMode.Items.Add("TRIPLEPLAY");
-            foreach (string s in MainWindow2.states) // find all modes we have done
+            foreach (string s in MainWindow2.allWAS) // find all modes we have done
             {
                 string[] tokens = s.Split(new[] { ' ' });
                 string band = tokens[0];
                 string mode = tokens[1];
-                addBand(band);
+                AddBand(band);
                 if (!modes.Contains(mode))
                 {
                     modes.Add(mode);
@@ -562,11 +572,11 @@ namespace LOTWQSL
             comboBoxMode.SelectedIndex = Properties.Settings.Default.GridMode;
         }
 
-        private void parseBandMode2(string band, string mode)
+        private void ParseBandMode2(string band, string mode)
         {
             bandStates.Clear();
             mode = " " + mode + " ";
-            foreach (string s in MainWindow2.states)
+            foreach (string s in MainWindow2.allWAS)
             {
                 //if (s.Substring(0, band.Length).Equals(band) && (s.Contains(mode) || mode.Equals(" ALL ")))
                 if ((s.Substring(0, band.Length).Equals(band) || band.Equals(BANDALL)) && (s.Contains(mode) || mode.Equals(" " + MODEALL + " ")))
@@ -607,7 +617,7 @@ namespace LOTWQSL
         }
         */
         // Will add a band to comboBoxBand if it's not already there
-        private void addBand(string bandChk)
+        private void AddBand(string bandChk)
         {
             if (bands.Contains(bandChk)) return;
             int i = 0;
@@ -634,12 +644,12 @@ namespace LOTWQSL
             }
         }
 
-        private void parseBandMode(string band, string mode)
+        private void ParseBandMode(string band, string mode)
         {
             LOTWMode LOTWmode = new LOTWMode();
             bandStates.Clear();
             mode = " " + mode + " ";
-            foreach (string s in MainWindow2.states)
+            foreach (string s in MainWindow2.allWAS)
             {
                 string[] tokens = s.Split(new string[] { " " }, StringSplitOptions.None);
                 string myband = tokens[0];
@@ -654,7 +664,7 @@ namespace LOTWQSL
                 {
                     mystate = "AK";
                 }
-                addBand(myband);
+                AddBand(myband);
                 //string myband = s.Substring(0, band.Length);
                 Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
@@ -680,7 +690,7 @@ namespace LOTWQSL
             e.Cancel = true;
         }
 
-        private void comboBoxMode_SelectedIndexChanged_1(object sender, EventArgs e)
+        private void ComboBoxMode_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             comboBoxMode.Text = comboBoxMode.SelectedItem.ToString();
             modeSelected = comboBoxMode.SelectedIndex;
@@ -695,13 +705,13 @@ namespace LOTWQSL
                 comboBoxMode.SelectedItem = modeSelected;
             }
             if (lastSelectedIndex >=0 && lastSelectedIndex != modeSelected)
-                fillGrid();
+                FillGrid();
             lastSelectedIndex = modeSelected;
         }
 
-        private void comboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            fillGrid();
+            FillGrid();
         }
 /*
         private void GridForm_LocationChanged(object sender, EventArgs e)
@@ -717,19 +727,19 @@ namespace LOTWQSL
             }
         }
 */
-        private void buttonRefresh_Click(object sender, EventArgs e)
+        private void ButtonRefresh_Click(object sender, EventArgs e)
         {
             buttonRefresh.Enabled = false;
             Application.DoEvents();
-            fillGrid();
+            FillGrid();
             buttonRefresh.Enabled = true;
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
         }
 
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             int myrow = e.RowIndex;
             int mycol = e.ColumnIndex;
@@ -772,11 +782,11 @@ namespace LOTWQSL
             // Build string for Properties save
             Properties.Settings.Default.GridHide = colsHide + ";" + rowsHide;
             Properties.Settings.Default.Save();
-            fillGrid();
+            FillGrid();
             // List call signs?
         }
 
-        private void unHide()
+        private void UnHide()
         {
             foreach (DataGridViewRow rw in dataGridView1.Rows)
             {
@@ -800,26 +810,26 @@ namespace LOTWQSL
             buttonUnhide.Visible = false;
             Properties.Settings.Default.GridHide = "col;row";
             Properties.Settings.Default.Save();
-            fillGrid();
+            FillGrid();
         }
 
-        private void buttonUnhide_Click(object sender, EventArgs e)
+        private void ButtonUnhide_Click(object sender, EventArgs e)
         { // Unhide any hidden columns
-            unHide();
+            UnHide();
         }
 
-        private void loadToolTips()
+        private void LoadToolTips()
         {
             if (gridHeadersColumn == BANDS)
             {
-                loadToolTipsRows();
+                LoadToolTipsRows();
             }
             else
             {
-                loadToolTipsColumns();
+                LoadToolTipsColumns();
             }
         }
-        private void loadToolTipsColumns() 
+        private void LoadToolTipsColumns() 
         {
             foreach(KeyValuePair<string,Dictionary<string,int>> kvpair1 in MainWindow2.popularStates) 
             {
@@ -844,7 +854,7 @@ namespace LOTWQSL
             }
         }
 
-        private void loadToolTipsRows()
+        private void LoadToolTipsRows()
         {
             foreach (KeyValuePair<string, Dictionary<string, int>> kvpair1 in MainWindow2.popularStates)
             {
@@ -869,7 +879,7 @@ namespace LOTWQSL
             }
         }
 
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
         }
@@ -887,9 +897,9 @@ namespace LOTWQSL
                 Properties.Settings.Default.GridHeadersColumn = gridHeadersColumn;
                 Properties.Settings.Default.Save();
                 gridHeadersDraw = true;
-                fixColRow();
+                FixColRow();
                 //unHide();                
-                fillGrid();
+                FillGrid();
 
             }
         }
