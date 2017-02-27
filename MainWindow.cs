@@ -104,6 +104,8 @@ namespace LOTWQSL
             this.Left = Properties.Settings.Default.RestoreBounds.Left;
             this.Height = Properties.Settings.Default.RestoreBounds.Height;
             this.Width = Properties.Settings.Default.RestoreBounds.Width;
+            if (this.Width < 185) this.Width = 185;
+            if (this.Height < 180) this.Height = 180;
             Rectangle rect = SystemInformation.VirtualScreen;
             if (this.Location.X < 0 || this.Location.Y < 0)
             {
@@ -227,6 +229,7 @@ namespace LOTWQSL
                     // Somehow we're getting dups...this is a temporary fix until figured out
                     while ((line = file.ReadLine()) != null)
                     {
+                        //if (line.Contains("70CM")) continue;
                         string thisDate = line.Substring(0, 8);
                         if (string.Compare(thisDate, lastDate) > 0)
                         {
@@ -330,7 +333,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 193; // Matches 3-digit version number
+            int currentVersion = 195; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -564,11 +567,12 @@ namespace LOTWQSL
                 }
                 else if (s.Contains("<eor>"))
                 {
-                    String sinceLOTWCompare = sinceLOTW.Remove(7, 1);
-                    sinceLOTWCompare = sinceLOTWCompare.Remove(4, 1);
-                    int mycompare = qsodate.CompareTo(QSODate2);
-                    if (qsodate.CompareTo(QSODate2)<0)
-                        continue;
+                    //if (band.Contains("70CM")) continue;
+                    //String sinceLOTWCompare = sinceLOTW.Remove(7, 1);
+                    //sinceLOTWCompare = sinceLOTWCompare.Remove(4, 1);
+                    //int mycompare = qsodate.CompareTo(QSODate2);
+                    //if (qsodate.CompareTo(QSODate2)<0)
+                    //    continue;
                     string key = qsodate + " " + timeon + " " + band + " " + mode + " " + callsign;
                     string keyDisplay = qsodate + " " + timeon + " " + band.PadRight(4) + " " + mode.PadRight(5) + " " + callsign.PadRight(6);
                     // Update our WAS info
@@ -853,7 +857,7 @@ namespace LOTWQSL
             try
             {
                 richTextBox1.Clear();
-                DateTime mydate = DateTime.Now;
+                DateTime mydate = DateTime.UtcNow;
                 richTextBox1.AppendText(mydate.ToString() + "\n");
                 richTextBox1.AppendText("Requesting LOTW data...please be patient...\nThis can take several minutes\n");
                 richTextBox1.AppendText(uri + "\n");
@@ -898,7 +902,7 @@ namespace LOTWQSL
             {
                 richTextBox1.AppendText(e.Message+"\n");
             }
-            DateTime mydate2 = DateTime.Now;
+            DateTime mydate2 = DateTime.UtcNow;
             richTextBox1.AppendText(mydate2.ToString());
             richTextBox1.WordWrap = false;
             if (responseData.Length == 0)
@@ -909,6 +913,14 @@ namespace LOTWQSL
             string filepath = appData + "\\lotw.adi";
             StreamWriter writer = new StreamWriter(filepath);
             writer.Write(responseData);
+            writer.Close();
+            filepath = appData + "\\lotw.log";
+            writer = new StreamWriter(filepath,true);
+            writer.WriteLine("UTC   "+ DateTime.UtcNow+"\n"+"Local "+DateTime.Now);
+            // skip the login/passwd fields for the log info
+            writer.WriteLine(uri.Substring(uri.IndexOf("&qso_query")));
+            writer.Write(responseData);
+            writer.WriteLine("===============================");
             writer.Close();
             if (!responseData.Contains("<CALL"))
             {

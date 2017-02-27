@@ -48,6 +48,8 @@ namespace LOTWQSL
             this.Left = Properties.Settings.Default.GridRestoreBounds.Left;
             this.Height = Properties.Settings.Default.GridRestoreBounds.Height;
             this.Width = Properties.Settings.Default.GridRestoreBounds.Width;
+            if (this.Width < 300) this.Width = 300;
+            if (this.Height < 300) this.Height = 300;
             //this.Location = Properties.Settings.Default.GridLocation;
             Rectangle rect = SystemInformation.VirtualScreen;
             dataGridView1.Font = new Font("Arial", 7);
@@ -57,8 +59,6 @@ namespace LOTWQSL
                 this.Left = 0;
                 this.Width = dataGridView1.Width+50;
                 this.Height = dataGridView1.Height+100;
-                //this.Width = 300;
-                //this.Height = 400;
             }
             if (this.Location.X > rect.Width || this.Location.Y > rect.Bottom)
             {
@@ -616,13 +616,30 @@ namespace LOTWQSL
             }
         }
         */
-        // Will add a band to comboBoxBand if it's not already there
+        private void GetBandUnit(string bandUnit, out int band, out String unit)
+        {
+            String[] tokens;
+            char[] split = { 'M', 'C' };
+            unit = "M";
+            if (bandUnit.Contains("CM"))
+            {
+                unit = "CM";
+            }
+            tokens = bandUnit.Split(split);
+            band = int.Parse(tokens[0]);
+        }
+
+        // Will add a band if it's not already there
         private void AddBand(string bandChk)
         {
             if (bands.Contains(bandChk)) return;
             int i = 0;
             int insertAt = -1;
-            int metersChk = int.Parse(bandChk.Split('M')[0]);
+            GetBandUnit(bandChk, out int ibandChk, out string unitChk);
+            if (unitChk.Equals("M"))
+            {
+                ibandChk *= 100;
+            }
             foreach (String band in bands)
             {
                 if (band.Equals("ALL"))
@@ -630,8 +647,12 @@ namespace LOTWQSL
                     insertAt = i;
                     break;
                 }
-                int meters = int.Parse(band.Split('M')[0]);
-                if (metersChk < meters)
+                GetBandUnit(band, out int bandChkComboBox, out string unitChkComboBox);
+                if (unitChkComboBox.Equals("M"))
+                {
+                    bandChkComboBox *= 100;
+                }
+                if (ibandChk < bandChkComboBox)
                 {
                     insertAt = i;
                     break;

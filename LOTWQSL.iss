@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "LOTWQSL"
-#define MyAppVersion "1.9.2c"
+#define MyAppVersion "1.9.4"
 #define MyAppPublisher "W9MDB"
 #define MyAppURL "http://qrz.com/db/W9MDB"
 #define MyAppExeName "LOTWQSL.exe"

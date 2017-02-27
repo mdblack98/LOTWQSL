@@ -30,6 +30,11 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.comboBoxMode = new System.Windows.Forms.ComboBox();
+            this.buttonRefresh = new System.Windows.Forms.Button();
+            this.buttonUnhide = new System.Windows.Forms.Button();
+            this.Column41 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column42 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.M6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.M10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.M12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -82,9 +87,6 @@
             this.Column38 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column39 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column40 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.comboBoxMode = new System.Windows.Forms.ComboBox();
-            this.buttonRefresh = new System.Windows.Forms.Button();
-            this.buttonUnhide = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -100,6 +102,8 @@
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column41,
+            this.Column42,
             this.M6,
             this.M10,
             this.M12,
@@ -169,6 +173,50 @@
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellDoubleClick);
+            // 
+            // comboBoxMode
+            // 
+            this.comboBoxMode.FormattingEnabled = true;
+            this.comboBoxMode.Location = new System.Drawing.Point(13, 13);
+            this.comboBoxMode.Name = "comboBoxMode";
+            this.comboBoxMode.Size = new System.Drawing.Size(72, 21);
+            this.comboBoxMode.TabIndex = 8;
+            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged_1);
+            // 
+            // buttonRefresh
+            // 
+            this.buttonRefresh.Location = new System.Drawing.Point(91, 13);
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
+            this.buttonRefresh.TabIndex = 9;
+            this.buttonRefresh.Text = "Refresh";
+            this.buttonRefresh.UseVisualStyleBackColor = true;
+            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
+            // 
+            // buttonUnhide
+            // 
+            this.buttonUnhide.Location = new System.Drawing.Point(173, 13);
+            this.buttonUnhide.Name = "buttonUnhide";
+            this.buttonUnhide.Size = new System.Drawing.Size(75, 23);
+            this.buttonUnhide.TabIndex = 10;
+            this.buttonUnhide.Text = "Unhide";
+            this.buttonUnhide.UseVisualStyleBackColor = true;
+            this.buttonUnhide.Visible = false;
+            this.buttonUnhide.Click += new System.EventHandler(this.ButtonUnhide_Click);
+            // 
+            // Column41
+            // 
+            this.Column41.HeaderText = "70cm";
+            this.Column41.Name = "Column41";
+            this.Column41.ReadOnly = true;
+            this.Column41.Width = 58;
+            // 
+            // Column42
+            // 
+            this.Column42.HeaderText = "2m";
+            this.Column42.Name = "Column42";
+            this.Column42.ReadOnly = true;
+            this.Column42.Width = 46;
             // 
             // M6
             // 
@@ -610,36 +658,6 @@
             this.Column40.Visible = false;
             this.Column40.Width = 79;
             // 
-            // comboBoxMode
-            // 
-            this.comboBoxMode.FormattingEnabled = true;
-            this.comboBoxMode.Location = new System.Drawing.Point(13, 13);
-            this.comboBoxMode.Name = "comboBoxMode";
-            this.comboBoxMode.Size = new System.Drawing.Size(72, 21);
-            this.comboBoxMode.TabIndex = 8;
-            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged_1);
-            // 
-            // buttonRefresh
-            // 
-            this.buttonRefresh.Location = new System.Drawing.Point(91, 13);
-            this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
-            this.buttonRefresh.TabIndex = 9;
-            this.buttonRefresh.Text = "Refresh";
-            this.buttonRefresh.UseVisualStyleBackColor = true;
-            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
-            // 
-            // buttonUnhide
-            // 
-            this.buttonUnhide.Location = new System.Drawing.Point(173, 13);
-            this.buttonUnhide.Name = "buttonUnhide";
-            this.buttonUnhide.Size = new System.Drawing.Size(75, 23);
-            this.buttonUnhide.TabIndex = 10;
-            this.buttonUnhide.Text = "Unhide";
-            this.buttonUnhide.UseVisualStyleBackColor = true;
-            this.buttonUnhide.Visible = false;
-            this.buttonUnhide.Click += new System.EventHandler(this.ButtonUnhide_Click);
-            // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -667,6 +685,8 @@
         private System.Windows.Forms.ComboBox comboBoxMode;
         private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.Button buttonUnhide;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column41;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column42;
         private System.Windows.Forms.DataGridViewTextBoxColumn M6;
         private System.Windows.Forms.DataGridViewTextBoxColumn M10;
         private System.Windows.Forms.DataGridViewTextBoxColumn M12;

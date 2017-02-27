@@ -71,6 +71,8 @@ namespace LOTWQSL
             this.Left = Properties.Settings.Default.MapRestoreBounds.Left;
             this.Height = Properties.Settings.Default.MapRestoreBounds.Height;
             this.Width = Properties.Settings.Default.MapRestoreBounds.Width;
+            if (this.Width < 200) this.Width = 200;
+            if (this.Height < 200) this.Height = 200;
             Rectangle rect = SystemInformation.VirtualScreen;
             if (this.Location.X < 0 || this.Location.Y < 0)
             {
@@ -230,13 +232,31 @@ namespace LOTWQSL
             modeCanChange = true;
         }
 
+        private void GetBandUnit(string bandUnit, out int band, out String unit)
+        {
+            String[] tokens;
+            char[] split = { 'M', 'C' };
+            unit = "M";
+            if (bandUnit.Contains("CM"))
+            {
+                unit = "CM";
+            }
+            tokens = bandUnit.Split(split);
+            band = int.Parse(tokens[0]);
+        }
+
         // Will add a band to comboBoxBand if it's not already there
         private void AddBand(string bandChk)
         {
             if (comboBoxBand.Items.Contains(bandChk)) return;
             int i = 0;
             int insertAt = -1;
-            int metersChk = int.Parse(bandChk.Split('M')[0]);
+
+            GetBandUnit(bandChk, out int ibandChk, out string unitChk);
+            if (unitChk.Equals("M"))
+            {
+                ibandChk *= 100;
+            }
             foreach (String band in comboBoxBand.Items)
             {
                 if (band.Equals("All"))
@@ -244,8 +264,12 @@ namespace LOTWQSL
                     insertAt = i;
                     break;
                 }
-                int meters = int.Parse(band.Split('M')[0]);
-                if (metersChk < meters)
+                GetBandUnit(band, out int bandChkComboBox, out string unitChkComboBox);
+                if (unitChkComboBox.Equals("M"))
+                {
+                    bandChkComboBox *= 100;
+                }
+                if (ibandChk < bandChkComboBox)
                 {
                     insertAt = i;
                     break;
