@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow2));
             this.textBoxLogin = new System.Windows.Forms.TextBox();
-            this.password = new System.Windows.Forms.TextBox();
+            this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.labelLogin = new System.Windows.Forms.Label();
             this.labelPassword = new System.Windows.Forms.Label();
@@ -50,19 +50,19 @@
             // 
             this.textBoxLogin.Location = new System.Drawing.Point(33, 3);
             this.textBoxLogin.Name = "textBoxLogin";
-            this.textBoxLogin.Size = new System.Drawing.Size(56, 20);
+            this.textBoxLogin.Size = new System.Drawing.Size(67, 20);
             this.textBoxLogin.TabIndex = 0;
             this.textBoxLogin.TextChanged += new System.EventHandler(this.Login_TextChanged);
             this.textBoxLogin.Leave += new System.EventHandler(this.Login_Leave);
             // 
-            // password
+            // textBoxPassword
             // 
-            this.password.Location = new System.Drawing.Point(152, 3);
-            this.password.Name = "password";
-            this.password.PasswordChar = '*';
-            this.password.Size = new System.Drawing.Size(56, 20);
-            this.password.TabIndex = 1;
-            this.password.TextChanged += new System.EventHandler(this.Password_TextChanged);
+            this.textBoxPassword.Location = new System.Drawing.Point(157, 3);
+            this.textBoxPassword.Name = "textBoxPassword";
+            this.textBoxPassword.PasswordChar = '*';
+            this.textBoxPassword.Size = new System.Drawing.Size(56, 20);
+            this.textBoxPassword.TabIndex = 1;
+            this.textBoxPassword.TextChanged += new System.EventHandler(this.Password_TextChanged);
             // 
             // richTextBox1
             // 
@@ -88,7 +88,7 @@
             // labelPassword
             // 
             this.labelPassword.AutoSize = true;
-            this.labelPassword.Location = new System.Drawing.Point(99, 6);
+            this.labelPassword.Location = new System.Drawing.Point(104, 6);
             this.labelPassword.Name = "labelPassword";
             this.labelPassword.Size = new System.Drawing.Size(53, 13);
             this.labelPassword.TabIndex = 4;
@@ -189,11 +189,11 @@
             this.Controls.Add(this.labelPassword);
             this.Controls.Add(this.labelLogin);
             this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.password);
+            this.Controls.Add(this.textBoxPassword);
             this.Controls.Add(this.textBoxLogin);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainWindow2";
-            this.Text = "LOTW QSL v1.9.5";
+            this.Text = "LOTW QSL v1.9.8";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
@@ -204,7 +204,7 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBoxLogin;
-        private System.Windows.Forms.TextBox password;
+        private System.Windows.Forms.TextBox textBoxPassword;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Label labelLogin;
         private System.Windows.Forms.Label labelPassword;

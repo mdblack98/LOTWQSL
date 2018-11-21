@@ -44,9 +44,6 @@
     <Setting Name="RestoreBounds" Type="System.Drawing.Rectangle" Scope="User">
       <Value Profile="(Default)">0, 0, 292, 300</Value>
     </Setting>
-    <Setting Name="GridMode" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="MapSize" Type="System.String" Scope="User">
       <Value Profile="(Default)">400, 400</Value>
     </Setting>
@@ -82,6 +79,12 @@
     </Setting>
     <Setting Name="QSODate" Type="System.String" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
+    </Setting>
+    <Setting Name="Mismatches" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="GridMode2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ALL</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -30,9 +30,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.comboBoxMode = new System.Windows.Forms.ComboBox();
-            this.buttonRefresh = new System.Windows.Forms.Button();
-            this.buttonUnhide = new System.Windows.Forms.Button();
             this.Column41 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column42 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.M6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -87,6 +84,9 @@
             this.Column38 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column39 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column40 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.comboBoxMode = new System.Windows.Forms.ComboBox();
+            this.buttonRefresh = new System.Windows.Forms.Button();
+            this.buttonUnhide = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -164,52 +164,22 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridView1.Location = new System.Drawing.Point(1, 43);
+            this.dataGridView1.Location = new System.Drawing.Point(-9, 43);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 70;
-            this.dataGridView1.Size = new System.Drawing.Size(512, 297);
+            this.dataGridView1.Size = new System.Drawing.Size(588, 297);
             this.dataGridView1.TabIndex = 7;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellDoubleClick);
-            // 
-            // comboBoxMode
-            // 
-            this.comboBoxMode.FormattingEnabled = true;
-            this.comboBoxMode.Location = new System.Drawing.Point(13, 13);
-            this.comboBoxMode.Name = "comboBoxMode";
-            this.comboBoxMode.Size = new System.Drawing.Size(72, 21);
-            this.comboBoxMode.TabIndex = 8;
-            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged_1);
-            // 
-            // buttonRefresh
-            // 
-            this.buttonRefresh.Location = new System.Drawing.Point(91, 13);
-            this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
-            this.buttonRefresh.TabIndex = 9;
-            this.buttonRefresh.Text = "Refresh";
-            this.buttonRefresh.UseVisualStyleBackColor = true;
-            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
-            // 
-            // buttonUnhide
-            // 
-            this.buttonUnhide.Location = new System.Drawing.Point(173, 13);
-            this.buttonUnhide.Name = "buttonUnhide";
-            this.buttonUnhide.Size = new System.Drawing.Size(75, 23);
-            this.buttonUnhide.TabIndex = 10;
-            this.buttonUnhide.Text = "Unhide";
-            this.buttonUnhide.UseVisualStyleBackColor = true;
-            this.buttonUnhide.Visible = false;
-            this.buttonUnhide.Click += new System.EventHandler(this.ButtonUnhide_Click);
             // 
             // Column41
             // 
             this.Column41.HeaderText = "70cm";
             this.Column41.Name = "Column41";
             this.Column41.ReadOnly = true;
-            this.Column41.Width = 58;
+            this.Column41.Width = 57;
             // 
             // Column42
             // 
@@ -336,7 +306,7 @@
             this.ALL.ReadOnly = true;
             this.ALL.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.ALL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ALL.Width = 32;
+            this.ALL.Width = 30;
             // 
             // Column1
             // 
@@ -658,18 +628,48 @@
             this.Column40.Visible = false;
             this.Column40.Width = 79;
             // 
+            // comboBoxMode
+            // 
+            this.comboBoxMode.FormattingEnabled = true;
+            this.comboBoxMode.Location = new System.Drawing.Point(13, 13);
+            this.comboBoxMode.Name = "comboBoxMode";
+            this.comboBoxMode.Size = new System.Drawing.Size(72, 21);
+            this.comboBoxMode.TabIndex = 8;
+            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMode_SelectedIndexChanged_1);
+            // 
+            // buttonRefresh
+            // 
+            this.buttonRefresh.Location = new System.Drawing.Point(91, 13);
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
+            this.buttonRefresh.TabIndex = 9;
+            this.buttonRefresh.Text = "Refresh";
+            this.buttonRefresh.UseVisualStyleBackColor = true;
+            this.buttonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
+            // 
+            // buttonUnhide
+            // 
+            this.buttonUnhide.Location = new System.Drawing.Point(173, 13);
+            this.buttonUnhide.Name = "buttonUnhide";
+            this.buttonUnhide.Size = new System.Drawing.Size(75, 23);
+            this.buttonUnhide.TabIndex = 10;
+            this.buttonUnhide.Text = "Unhide";
+            this.buttonUnhide.UseVisualStyleBackColor = true;
+            this.buttonUnhide.Visible = false;
+            this.buttonUnhide.Click += new System.EventHandler(this.ButtonUnhide_Click);
+            // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(514, 340);
+            this.ClientSize = new System.Drawing.Size(580, 340);
             this.Controls.Add(this.buttonUnhide);
             this.Controls.Add(this.buttonRefresh);
             this.Controls.Add(this.comboBoxMode);
             this.Controls.Add(this.dataGridView1);
             this.KeyPreview = true;
             this.Name = "GridForm";
-            this.Text = "Grid";
+            this.Text = "80m";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GridForm_FormClosing);
             this.Load += new System.EventHandler(this.GridForm_Load);
             this.VisibleChanged += new System.EventHandler(this.GridForm_VisibleChanged);

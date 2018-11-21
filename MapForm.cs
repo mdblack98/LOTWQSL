@@ -134,7 +134,7 @@ namespace LOTWQSL
             // Determine the forecolor based on whether or not the item is selected    
             Brush brush = Brushes.Black;
             Font myfont = new Font(((Control)sender).Font, FontStyle.Regular);
-            if (modeIsWAS[mode])
+            if (modeIsWAS.ContainsKey(mode) && modeIsWAS[mode]==true)
             {
                 brush = Brushes.Green;
                 myfont.Dispose();
@@ -325,9 +325,9 @@ namespace LOTWQSL
                 LOTWmode.addCallsign(mystate, mymode);
                 Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
-                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && (band.Contains("Digital") || mode.Contains("DIGITAL"));
+                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && band.Contains("Digital");
                 Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate) && band.Contains("TriplePlay");
-                if ((bandOK && modeOK) || (isDigitalMode && bandOK) || isTriplePlay)
+                if ((bandOK && modeOK) || isDigitalMode || isTriplePlay)
                 {
                     string state = s.Substring(s.Length - 2);
                     if (!bandStates.Contains(state))

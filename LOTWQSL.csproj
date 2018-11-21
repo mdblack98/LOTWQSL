@@ -162,6 +162,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ADIFChoose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ADIFChoose.Designer.cs">
+      <DependentUpon>ADIFChoose.cs</DependentUpon>
+    </Compile>
     <Compile Include="LOTWMode.cs" />
     <Compile Include="MainWIndow.cs">
       <SubType>Form</SubType>
@@ -207,6 +213,9 @@
     <Compile Include="MessageBoxHelper .cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ADIFChoose.resx">
+      <DependentUpon>ADIFChoose.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWIndow.resx">
       <DependentUpon>MainWIndow.cs</DependentUpon>
     </EmbeddedResource>

@@ -29,19 +29,21 @@ namespace LOTWQSL
         HashSet<string> callsigns;
         //public static HashSet<string> states; // List contains State/Band/Mode
         public static HashSet<string> allWAS = new HashSet<string>();
-        HashSet<string> dxcc;
-        HashSet<string> countries;
+        HashSet<string> dxccMixed;
+        HashSet<string> dxccChallenge;
+        HashSet<string> dxccChallengeBands;
         HashSet<string> prefixes;
         public static Dictionary<string, Dictionary<string, int>> popularStates;
         //Dictionary<string,int> popularCalls;
         int nstates = 0;
-        int ndxcc = 0;
-        int ncountries = 0;
+        int ndxccMixed = 0;
         int nprefixes = 0;
         int nqsls = 0;
         int ncallsigns = 0;
+        int ndxccChallenge = 0;
+        int mismatches = Properties.Settings.Default.Mismatches;
         Boolean mergeCalls = true; // if user does call+call login do we want to merge or keep separate?
-        Boolean qslMisMatchHeaderFlag = true;
+        private string qslMismatchStr;
 
         public MainWindow2()
         {
@@ -91,11 +93,22 @@ namespace LOTWQSL
             }
             history = new HashSet<string>();
             //states = new HashSet<string>();
-            dxcc = new HashSet<string>();
-            countries = new HashSet<string>();
+            dxccMixed = new HashSet<string>();
+            dxccChallenge = new HashSet<string>();
+            dxccChallengeBands = new HashSet<string>();
             prefixes = new HashSet<string>();
             callsigns = new HashSet<string>();
             popularStates = new Dictionary<string,Dictionary<string,int>>();
+            dxccChallengeBands.Add("160M");
+            dxccChallengeBands.Add("80M");
+            dxccChallengeBands.Add("40M");
+            dxccChallengeBands.Add("30M");
+            dxccChallengeBands.Add("20M");
+            dxccChallengeBands.Add("17M");
+            dxccChallengeBands.Add("15M");
+            dxccChallengeBands.Add("12M");
+            dxccChallengeBands.Add("10M");
+            dxccChallengeBands.Add("6M");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -123,7 +136,7 @@ namespace LOTWQSL
             //sinceLOTWStart = Properties.Settings.Default.
             textBoxSince.Text = sinceLOTW;
             textBoxLogin.Text = mylogin; // this will force keeperLoad()
-            password.Text = mypassword;
+            textBoxPassword.Text = mypassword;
             KeeperLoad(keeperFile);
             timer1.Interval = 3000;
             timer1.Start();
@@ -132,7 +145,7 @@ namespace LOTWQSL
             System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
             toolTip1.SetToolTip(this.textBoxLogin, "Your LOTW login name");
             toolTip1.SetToolTip(this.labelLogin, "Your LOTW login name");
-            toolTip1.SetToolTip(this.password, "Your LOTW password");
+            toolTip1.SetToolTip(this.textBoxPassword, "Your LOTW password");
             toolTip1.SetToolTip(this.labelPassword, "Your LOTW password");
             toolTip1.SetToolTip(this.buttonHelp, "Help");
             toolTip1.SetToolTip(this.textBoxSince, "QSL since date YYYY-MM-DD\n(updates itself automatically)\n1900-01-01 resets everything");
@@ -202,7 +215,6 @@ namespace LOTWQSL
         {
             string lastDate = "19000101";
             allWAS.Clear();
-            countries.Clear();
             history.Clear();
             callsigns.Clear();
             popularStates.Clear();
@@ -229,7 +241,13 @@ namespace LOTWQSL
                     // Somehow we're getting dups...this is a temporary fix until figured out
                     while ((line = file.ReadLine()) != null)
                     {
+                        if (line.Length < 2) continue;
                         //if (line.Contains("70CM")) continue;
+                        if (line.Length < 9)
+                        {
+                            MessageBox.Show("Error getting date @8 offset in '" + line + "'");
+                            continue;
+                        }
                         string thisDate = line.Substring(0, 8);
                         if (string.Compare(thisDate, lastDate) > 0)
                         {
@@ -249,7 +267,8 @@ namespace LOTWQSL
                         if (!callsigns.Contains(callsign))
                             callsigns.Add(callsign);
                         var tokens2 = tokens[2].Split(' ');
-                        string country = tokens2[2]; // should be country info
+                        string country = "";
+                        if (tokens2.Count() > 2) country = tokens2[2]; // should be country info
                         if (tokens2.Count() > 3)
                         {
                             for (int i = 3; i < tokens2.Count(); ++i)
@@ -257,26 +276,41 @@ namespace LOTWQSL
                                 country += " " + tokens2[i];
                             }
                         }
-                        if (!countries.Contains(country))
+                        if (country.Length > 0 )
                         {
-                            countries.Add(country);
+                            string band;
+                            String[] tokens3 = tokens[2].Split(' ');
+                            band = tokens3[0];
+                            if (!dxccMixed.Contains(country))
+                            {
+                                dxccMixed.Add(country);
+                            }
+                            if (!band.Equals("60M") && tokens.Count() > 2)
+                            {
+                                if (dxccChallengeBands.Contains(band))
+                                {
+                                    string dxccKey = tokens3[0] + " " + country;
+                                    if (!dxccChallenge.Contains(dxccKey)) {
+                                        dxccChallenge.Add(dxccKey);
+                                        ++ndxccChallenge;
+                                    }
+                                }
+                            }
+                        }
+                        if (!prefixes.Contains(tokens[3]))
+                        {
+                            prefixes.Add(tokens[3]);
+                            //richTextBox1.AppendText(tokens[3] + "\n");
                         }
                         tokens1 = tokens[1].Split(' ');
                         if (tokens1.Count() < 3) continue;
-                        string state = tokens1[2];
+                        string state = tokens1[2].Substring(0,2);
                         AddToPopular(state,callsign);
                         //if ((!states.Contains(tokens[1])) && (!tokens[1].Equals("none")))
                         //{
                         //    states.Add(tokens[1]);
                         //}
-                        if (!prefixes.Contains(tokens[3]))
-                        {
-                            prefixes.Add(tokens[3]);
-                        }
-                        //if (!dxcc.Contains(tokens[2]))
-                        //{
-                        //    dxcc.Add(tokens[2]);
-                        //}
+                        
                     }
                 }
                 file.Close();
@@ -293,17 +327,22 @@ namespace LOTWQSL
                     //}
                 }
                 richTextBox1.AppendText(nqsls + " QSLs loaded\n");
+                richTextBox1.AppendText(mismatches + " QSLs with mode mismatch\n");
                 richTextBox1.AppendText(callsigns.Count() + " callsigns\n");
                 richTextBox1.AppendText(prefixes.Count() + " prefixes\n");
                 //richTextBox1.AppendText(states.Count() + " state entries\n");
-                //richTextBox1.AppendText(dxcc.Count() + " dxcc entries\n");
-                richTextBox1.AppendText(countries.Count() + " countries\n");
+                richTextBox1.AppendText(dxccChallenge.Count() + " DXCC challenge entries\n");
+                richTextBox1.AppendText(dxccMixed.Count() + " DXCC mixed entries\n");
                 ncallsigns = callsigns.Count();
                 //nstates = states.Count();
                 nstates = allWAS.Count();
                 nprefixes = prefixes.Count();
-                ndxcc = dxcc.Count();
-                ncountries = countries.Count();
+                ndxccMixed = dxccMixed.Count();
+                ndxccChallenge = dxccChallenge.Count();
+                //foreach (string s in dxcc)
+                //{
+                //    richTextBox1.AppendText(s + "\n");
+                //}
             }
             catch (FileNotFoundException e)
             {
@@ -327,13 +366,13 @@ namespace LOTWQSL
             catch (Exception e)
             {
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
-                MessageBox.Show(keeperFile + ":" + e.Message);
+                MessageBox.Show(keeperFile + ":" + e.Message+"\n"+e.StackTrace);
             }
             textBoxSince.Text = lastDate.Substring(0, 4) + "-" + lastDate.Substring(4, 2) + "-" + lastDate.Substring(6, 2);
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 195; // Matches 3-digit version number
+            int currentVersion = 197; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -376,12 +415,41 @@ namespace LOTWQSL
             }
         }
 
+        private void ControlsDisable()
+        {
+            buttonRefresh.Enabled = false;
+            buttonMap.Enabled = false;
+            buttonGrid.Enabled = false;
+            buttonHelp.Enabled = false;
+            textBoxLogin.Enabled = false;
+            textBoxSince.Enabled = false;
+            textBoxEnd.Enabled = false;
+            textBoxPassword.Enabled = false;
+            Application.DoEvents();
+        }
+
+        private void ControlsEnable()
+        {
+            buttonRefresh.Enabled = true;
+            buttonMap.Enabled = true;
+            buttonGrid.Enabled = true;
+            buttonHelp.Enabled = true;
+            textBoxLogin.Enabled = true;
+            textBoxSince.Enabled = true;
+            textBoxEnd.Enabled = true;
+            textBoxPassword.Enabled = true;
+            Application.DoEvents();
+        }
+
         private void DoADIF(ref string responseData)
         {
-            qslMisMatchHeaderFlag = true;
+            bool qslMisMatch = false;
+            bool qslMisMatchHeaderFlag = true;
             var lines = responseData.Split(new[] { '\r', '\n' });
             int nLines = 0;
             int nNew = 0;
+            int nQslMismatches = 0;
+            int nHistory = history.Count();
             string callsign = String.Empty;
             string band = String.Empty;
             string mode = String.Empty;
@@ -392,6 +460,9 @@ namespace LOTWQSL
             string state = String.Empty;
             string country = String.Empty;
             string prefix = String.Empty;
+
+            Cursor.Current = Cursors.WaitCursor;
+
             richTextBox1.Clear();
             bool qsl_rcvd = false;
             richTextBox1.AppendText("Processing ADIF file\n");
@@ -406,7 +477,7 @@ namespace LOTWQSL
             }
             string QSODate2 = QSODate.Remove(7, 1); // we need this format to compare with the ADIF file
             QSODate2 = QSODate2.Remove(4, 1);
-
+            qslMismatchStr = "";
             if (resetall)
             { // This indicates we're downloading the whole history so clear everything out
                 // Remember our first date entered as the QSO date for base reference
@@ -423,16 +494,14 @@ namespace LOTWQSL
                     MessageBox.Show(ex.Message);
                     errorStr = ex.Message;
                 }
-                countries.Clear();
-                dxcc.Clear();
+                dxccMixed.Clear();
                 //states.Clear();
                 allWAS.Clear();
                 history.Clear();
                 prefixes.Clear();
                 callsigns.Clear();
                 nqsls = 0;
-                ncountries = 0;
-                ndxcc = 0;
+                ndxccMixed = 0;
                 nstates = 0;
                 nprefixes = 0;
                 ncallsigns = 0;
@@ -442,7 +511,8 @@ namespace LOTWQSL
                 // if not a reset then set our QSO date to the saved value
                 QSODate = Properties.Settings.Default.QSODate;
             }
-            richTextBox1.AppendText("QSO Start: " + QSODate + "\n");
+            // No longer accurate with random ADIF files
+            //richTextBox1.AppendText("QSO Start: " + QSODate + "\n");
             Boolean verbose = true;
             if (lines.Length > 2000)
             {
@@ -481,10 +551,12 @@ namespace LOTWQSL
                 }
                 else if (s.Contains("<CALL:"))
                 {
-                    ++nLines;
+                    if ((++nLines % 20) == 0)
+                    {
+                        Application.DoEvents();
+                    }
                     if (!verbose && ((nLines % 500) == 0))
                     {
-                        //if (nLines > 500) richTextBox1.Undo();
                         richTextBox1.AppendText("#QSLs=" + nLines + "\r");
                         this.Update();
                     }
@@ -493,8 +565,13 @@ namespace LOTWQSL
                     if (!callsigns.Contains(callsign))
                     {
                         callsigns.Add(callsign);
-                        ++ncallsigns;
+                        //++ncallsigns;
                     }
+                    // If we need to debug anyone in particular
+                    //if (callsign.Equals("W9OAB"))
+                    //{
+                    //    MessageBox.Show("Got 'em");
+                    //}
                 }
                 else if (s.Contains("<PFX:"))
                 {
@@ -532,18 +609,31 @@ namespace LOTWQSL
                 else if (s.Contains("<STATE:"))
                 {
                     int offset = s.IndexOf(">");
-                    state = s.Substring(offset + 1);
+                    state = s.Substring(offset + 1, 2);
                 }
                 else if (s.Contains("<APP_LoTW_QSLMODE:"))
                 {
-                    if (qslMisMatchHeaderFlag)
+                    mismatches++;
+                    Properties.Settings.Default.Mismatches = mismatches;
+                    Properties.Settings.Default.Save();
+                    qslMisMatch = true;
+                    if (qslMisMatchHeaderFlag)  // only print this header once
                     {
-                        richTextBox1.AppendText("ERRORMSG\tQSODATE\tTIME\tCALL\tYOURMODE\tTHEIRMODE\n");
+                        String logHdr = "ERRORMSG\tQSODATE\tTIME\tCALL\tYOURMODE\tTHEIRMODE\n";
+                        qslMismatchStr += logHdr;
+                        richTextBox1.AppendText(logHdr);
                         qslMisMatchHeaderFlag = false;
                     }
                     var tokens = s.Split(new[] { '>', '\r', '\n' });
                     String qslmode = tokens[1];
+                    String logStr = "Mismatched mode\t" + qsodate + "\t" + timeon + "\t" + callsign + "\t" + mode + "  \t" + qslmode + "\n";
                     richTextBox1.AppendText("Mismatched mode\t"+qsodate+"\t"+timeon+"\t"+callsign+"\t"+mode+"  \t"+qslmode+"\n");
+                    qslMismatchStr += logStr;
+
+                    string filepath = appData + "\\lotw.adi";
+                    StreamWriter writer = new StreamWriter(filepath);
+                    writer.Write(responseData);
+                    writer.Close();
                 }
                 else if (s.Contains("<COUNTRY:"))
                 {
@@ -583,7 +673,7 @@ namespace LOTWQSL
                     if (!state.Equals(String.Empty) && (country.Equals("USA") || country.Equals("ALASKA") || country.Equals("HAWAII")))
                     {
                         wasinfo = band + " " + mode + " " + state;
-                        if (!allWAS.Contains(wasinfo))
+                        if (!allWAS.Contains(wasinfo) && !qslMisMatch)
                         {
                             MainWindow2.allWAS.Add(wasinfo);
                             //states.Add(wasinfo);
@@ -592,24 +682,36 @@ namespace LOTWQSL
                         }
                     }
                     // Update our Country info and modegroup
-                    string dxccinfo = band + " " + modegroup + " " + country;
-                    if (!dxcc.Contains(dxccinfo))
+                    string dxccinfo = "";
+                    if (country.Length > 0) // Avoid /MM calls with no DXCC provided and such
                     {
-                        dxcc.Add(dxccinfo);
-                        newDXCC = true;
+                        dxccinfo = band + " " + modegroup + " " + country;
+                        if (!dxccMixed.Contains(country))
+                        {
+                            dxccMixed.Add(country);
+                            newDXCC = true;
+                        }
                     }
                     if (!history.Contains(key) && qsl_rcvd)
                     {
-                        history.Add(key);
-                        if (!state.Equals(String.Empty) && country.Equals("USA"))
                         {
-                            //country = String.Empty;
+                            history.Add(key);
+                            if (!state.Equals(String.Empty) && country.Equals("USA"))
+                            {
+                                //country = String.Empty;
+                            }
+                            if (verbose)
+                            {
+                                richTextBox1.AppendText(keyDisplay + " " + state + " " + country + "\n");
+                            }
+                            updateFile = true;
                         }
-                        if (verbose)
+                        if (!qslMisMatch)
+                        //else
                         {
-                            richTextBox1.AppendText(keyDisplay + " " + state + " " + country + "\n");
+                            nQslMismatches++;
                         }
-                        updateFile = true;
+                        // we can still update prefix since QSL match is good enough for that
                         if ((!prefix.Equals(String.Empty)) && (!prefixes.Contains(prefix)))
                         {
                             prefixes.Add(prefix);
@@ -621,12 +723,21 @@ namespace LOTWQSL
 
 
                     }
-                    if (!countries.Contains(country) && country.Length > 0)
+                    if (!dxccMixed.Contains(country) && country.Length > 0)
                     {
-                        countries.Add(country);
+                        dxccMixed.Add(country);
                         if (verbose)
                         {
                             richTextBox1.AppendText("  New Country: " + country + "\n");
+                        }
+                    }
+                    if (dxccChallengeBands.Contains(band))
+                    {
+                        string dxccKey = band + " " + country;
+                        if (!dxccChallenge.Contains(dxccKey))
+                        {
+                            dxccChallenge.Add(dxccKey);
+                            richTextBox1.AppendText("  New DXCC Challenge entry: "+key+"\n");
                         }
                     }
                     if (newWAS)
@@ -676,6 +787,7 @@ namespace LOTWQSL
                     creditGranted = String.Empty;
                     state = String.Empty;
                     country = String.Empty;
+                    qslMisMatch = false;
                 }
             }
             if (nLines >= 500) richTextBox1.Undo();
@@ -683,18 +795,20 @@ namespace LOTWQSL
             {
                 nLines = nqsls; // in case we have an error retrieving data
             }
-            else
-            {
-                nLines = nqsls + nNew;
-            }
+            //else
+            //{
+            //    nLines = nqsls + nQslMismatches + nNew;
+            //}
+            richTextBox1.AppendText(nLines + " QSLs in ADIF data\n");
             if (nNew == 0)
             {
                 richTextBox1.AppendText("No New QSLs\n");
             }
-            string bumpup = (nqsls == nLines) ? "+0" : ("+" + (nLines - nqsls));
-            richTextBox1.AppendText(nLines + " QSLs \t" + bumpup + "\n");
+            string bumpup = (history.Count() - nHistory).ToString();
+            richTextBox1.AppendText(history.Count() + " QSLs \t" + "+" + bumpup + "\n");
 
             bumpup = (ncallsigns == callsigns.Count()) ? "+0" : ("+" + (callsigns.Count() - ncallsigns));
+            if (ncallsigns == 0) ncallsigns = callsigns.Count();
             richTextBox1.AppendText(ncallsigns + " Calls \t" + bumpup + "\n");
 
             bumpup = (nprefixes == prefixes.Count()) ? "+0" : ("+" + (prefixes.Count() - nprefixes));
@@ -706,19 +820,43 @@ namespace LOTWQSL
             //bumpup = (ndxcc == dxcc.Count()) ? "+0" : ("+" + (dxcc.Count() - ndxcc));
             //richTextBox1.AppendText(dxcc.Count() + " dxcc entries\t" + bumpup + "\n");
 
-            bumpup = (ncountries == countries.Count()) ? "+0" : ("+" + (countries.Count() - ncountries));
-            richTextBox1.AppendText(countries.Count() + " country entries\t" + bumpup + "\n");
+            bumpup = (ndxccMixed == dxccMixed.Count()) ? "+0" : ("+" + (dxccMixed.Count() - ndxccMixed));
+            richTextBox1.AppendText(dxccMixed.Count() + " DXCC entries\t" + bumpup + "\n");
+
+            bumpup = (ndxccChallenge == dxccChallenge.Count()) ? "+0" : ("+" + (dxccChallenge.Count() - ndxccChallenge));
+            richTextBox1.AppendText(dxccChallenge.Count + " DXCC Challenge entries\t" + bumpup + "\n");
 
             nqsls = nLines;
             nstates = allWAS.Count();
             nprefixes = prefixes.Count();
-            ndxcc = dxcc.Count();
-            ncountries = countries.Count();
+            ndxccMixed = dxccMixed.Count();
             ncallsigns = callsigns.Count();
             if (nLines == 0)
             {
                 richTextBox1.AppendText("Check your login\n");
             }
+            if (qslMismatchStr.Count() > 0)
+            {
+                SaveFileDialog saveFile = new SaveFileDialog()
+                {
+                    FileName = "LOTW_Mode_Mismatches.txt",
+                    Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (StreamWriter sw = new StreamWriter(saveFile.FileName))
+                            sw.Write(qslMismatchStr);
+                    }
+                    catch (Exception ex) {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+
+            }
+            Cursor.Current = Cursors.Default;
         }
         /*
         private void getEQSL()
@@ -743,7 +881,7 @@ namespace LOTWQSL
                 data.Close();
                 reader.Close();
                 // Now we get the link for the ADI file from the response we got
-                int offset = responseData.IndexOf("downloadedfiles");
+                int offset = responseData.IndexOf("downloadedfiles/");
                 offset += responseData.Substring(offset).IndexOf("/");
                 int offset2 = responseData.Substring(offset).IndexOf('\"');
                 string s = responseData.Substring(offset, offset2);
@@ -765,11 +903,11 @@ namespace LOTWQSL
                 richTextBox1.AppendText("Invalid reponse from EQSL,CC...\nTry again\n");
                 return;
             }
-            string filepath = appData + "\\lotw.adi";
+            string filepath = appData + "\\eqsl.adi";
             StreamWriter writer = new StreamWriter(filepath);
             writer.Write(responseData);
             writer.Close();
-            doADIF(ref responseData);
+            doADIFeQSL(ref responseData);
         }
          * */
 
@@ -779,7 +917,7 @@ namespace LOTWQSL
             string line = string.Empty;
             int n = 0;
             richTextBox1.AppendText("Downloading log...\r");
-
+            
             while ((line = reader.ReadLine()) != null)
             {
                 sb.Append(line+"\n");
@@ -872,10 +1010,15 @@ namespace LOTWQSL
                     errorStr = e.Message;
                 }
                 MyWebClient client = new MyWebClient();
-                // Without adding a header it seemed like LOTW was not liking very many queries together while debugging
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                       | SecurityProtocolType.Tls11
+                       | SecurityProtocolType.Tls12;
+                //       | SecurityProtocolType.Ssl3;                // Without adding a header it seemed like LOTW was not liking very many queries together while debugging
                 client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0");
-                System.Net.WebRequest.DefaultWebProxy = null;
+                System.Net.WebRequest.DefaultWebProxy = WebRequest.DefaultWebProxy;
                 client.Proxy = System.Net.WebRequest.DefaultWebProxy;
+                
                 using (Stream data = client.OpenRead(uri))
                 {
                     richTextBox1.AppendText("Request accepted...reading ADI data\n");
@@ -888,7 +1031,7 @@ namespace LOTWQSL
                         errorStr = e.Message;
                     }
                     data.ReadTimeout = 60 * 120 * 1000; // 2 hour timeout
-                    using (BufferedStream buffer = new BufferedStream(data,4096*16))
+                    using (BufferedStream buffer = new BufferedStream(data,4096*64))
                     {
                         using (StreamReader reader = new StreamReader(buffer))
                         {
@@ -907,7 +1050,7 @@ namespace LOTWQSL
             richTextBox1.WordWrap = false;
             if (responseData.Length == 0)
             {
-                richTextBox1.AppendText("Invalid reponse from LOTW...\nTry again\n");
+                richTextBox1.AppendText(" Invalid reponse from LOTW...\nTry again\n");
                 return;
             }
             string filepath = appData + "\\lotw.adi";
@@ -1007,7 +1150,7 @@ namespace LOTWQSL
 
         private void Password_TextChanged(object sender, EventArgs e)
         {
-            mypassword = password.Text;
+            mypassword = textBoxPassword.Text;
             Properties.Settings.Default.password = mypassword;
             Properties.Settings.Default.Save();
         }
@@ -1032,36 +1175,69 @@ namespace LOTWQSL
 
         private void ButtonRefresh_Click(object sender, EventArgs e)
         {
-            buttonRefresh.Enabled = false;
+            ControlsDisable();
+            ADIFChoose choose = new ADIFChoose()
+            {
+                StartPosition = FormStartPosition.CenterParent
+            };
+            choose.ShowDialog();
+            choose.Hide();
+            if (choose.GetChoice() == ADIFChoose.Source.CANCEL) return;
+            if (choose.GetChoice() != ADIFChoose.Source.LOTW)
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    Filter = "Text files (*.adi)|*.adi|All files (*.*)|*.*"
+                };
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    FileStream adif = new FileStream(openFile.FileName,FileMode.Open,FileAccess.Read);
+                    StreamReader reader = new StreamReader(adif);
+                    String responseData = reader.ReadToEnd();
+                        
+                    DoADIF(ref responseData);
+                    ControlsEnable();
+                    return;
+                }
+                else
+                {
+                    ControlsEnable();
+                    return;
+                }
+            }
             if (textBoxSince.Text.Equals("1900-01-01"))
             {
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
                 if (MessageBox.Show("1900-01-01 will download your entire LOTW history...are you sure?", "New Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
+                    ControlsEnable();
                     return;
                 }
+                mismatches = 0;
+                Properties.Settings.Default.Mismatches = mismatches;
+                Properties.Settings.Default.Save();
             }
             if (textBoxSince.Text.Substring(0,1).Equals("!"))
             {
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
                 if (MessageBox.Show("Exclamation point will set this date as the earliest date for all QSOs...are you sure?", "New Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
+                    ControlsEnable();
                     return;
                 }
             }
             Cursor.Current = Cursors.WaitCursor;
             GetLOTW();
-            buttonRefresh.Enabled = true;
             if (gridForm.IsHandleCreated)
             {
                 gridForm.FillGrid();
             }
             Cursor.Current = Cursors.Default;
+            ControlsEnable();
         }
 
         private void ButtonHelp_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("Michael Black\nW9MDB\nmdblack98@yahoo.com\n"+appData);
             try
             {
                 help.Show();

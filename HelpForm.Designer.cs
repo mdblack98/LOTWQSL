@@ -41,9 +41,9 @@ namespace LOTWQSL
             this.webBrowser1.Size = new System.Drawing.Size(902, 627);
             this.webBrowser1.TabIndex = 0;
             this.webBrowser1.TabStop = false;
-            string helpFile = System.AppDomain.CurrentDomain.BaseDirectory + "LOTWQSLHelp.htm";
-
-            this.webBrowser1.Url = new System.Uri("file:"+helpFile, System.UriKind.Absolute);
+            this.webBrowser1.Url = new System.Uri("file:C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\LO" +
+        "TWQSLHelp.htm", System.UriKind.Absolute);
+            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
             // 
             // HelpForm
             // 
