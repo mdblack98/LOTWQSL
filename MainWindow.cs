@@ -5,10 +5,14 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+
+//Can't do the snk file as the dlls we use are strong named
+//[assembly:AssemblyKeyFileAttribute("MichaelBlack.snk")]
 
 namespace LOTWQSL
 {
@@ -372,7 +376,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 197; // Matches 3-digit version number
+            int currentVersion = 198; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";

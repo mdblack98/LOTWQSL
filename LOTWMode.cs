@@ -101,9 +101,9 @@ WSPR	DATA
             modeDIGITAL = ii3;
         }
 
-        ~LOTWMode()
-        {
-        }
+        //~LOTWMode()
+        //{
+        //}
 
         void Clear()
         {

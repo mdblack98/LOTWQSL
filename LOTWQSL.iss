@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "LOTWQSL"
-#define MyAppVersion "1.9.6.4"
+#define MyAppVersion "1.9.8"
 #define MyAppPublisher "W9MDB"
 #define MyAppURL "http://qrz.com/db/W9MDB"
 #define MyAppExeName "LOTWQSL.exe"
@@ -24,6 +24,7 @@ DisableProgramGroupPage=yes
 OutputBaseFilename=LOTWQSLSetup
 Compression=lzma
 SolidCompression=yes
+PrivilegesRequired=poweruser
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -33,13 +34,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\Users\Black\Dropbox\Projects\LOTWQSL\bin\Release\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\mike\Dropbox\Projects\LOTWQSL\bin\Release\*"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{commonappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
