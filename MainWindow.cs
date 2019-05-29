@@ -376,7 +376,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 198; // Matches 3-digit version number
+            int currentVersion = 199; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -590,7 +590,7 @@ namespace LOTWQSL
                     var tokens = s.Split(new[] { '>', '\r', '\n' });
                     band = tokens[1];
                 }
-                else if (s.Contains("<MODE:"))
+                else if (s.Contains("<MODE:") || s.Contains("<SUBMODE:"))
                 {
                     var tokens = s.Split(new[] { '>', '\r', '\n' });
                     mode = tokens[1];
