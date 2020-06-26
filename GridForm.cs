@@ -44,6 +44,8 @@ namespace LOTWQSL
 
         private void GridForm_Load(object sender, EventArgs e)
         {
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             ExtensionMethods.DoubleBuffered(dataGridView1, true);
             BandsLoad();
             this.Top = Properties.Settings.Default.GridRestoreBounds.Top;
@@ -283,14 +285,13 @@ namespace LOTWQSL
         */
         public void FillGrid()
         {
-            //dataGridView1.SuspendLayout();
-            foreach (DataGridViewColumn c in dataGridView1.Columns)
-            {
-                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            }
+            // Turn off autosize for speed -- along with double buffering reduced
+            // load time from over 10 seconds to 1 second.
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             Cursor.Current = Cursors.WaitCursor;
-            dataGridView1.RowHeadersVisible = false;
-            dataGridView1.ColumnHeadersVisible = false;
+            //dataGridView1.RowHeadersVisible = false;
+            //dataGridView1.ColumnHeadersVisible = false;
             string mode = comboBoxMode.GetItemText(comboBoxMode.SelectedItem);
             bool stategrid = true;
             foreach (string band in bands)
@@ -319,15 +320,14 @@ namespace LOTWQSL
             }
             HideGridItems();
             LoadToolTips();
-            dataGridView1.RowHeadersVisible = true;
-            dataGridView1.ColumnHeadersVisible = true;
+            //dataGridView1.RowHeadersVisible = true;
+            //dataGridView1.ColumnHeadersVisible = true;
             dataGridView1.AutoSize = true;
             Cursor.Current = Cursors.Default;
-            foreach (DataGridViewColumn c in dataGridView1.Columns)
-            {
-                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            }
-            //.ResumeLayout();
+
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
         }
 
         private void FillGridRowByState(int iCell, HashSet<string> statesRemaining)
