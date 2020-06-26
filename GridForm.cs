@@ -14,17 +14,17 @@ namespace LOTWQSL
     {
         List<string> bands;
         List<string> states;
-        HashSet<string> bandStates;
+        readonly HashSet<string> bandStates;
         //HashSet<string> bandCountries;
-        private HashSet<string> modes; //All the modes in our ADIF file
-        Dictionary<string, bool> modeIsWAS;
+        private readonly HashSet<string> modes; //All the modes in our ADIF file
+        //readonly Dictionary<string, bool> modeIsWAS;
         //SortedDictionary<string,int > countries;
         string modeSelected = "ALL";
         const string BANDALL = "ALL";
         const string MODEALL = "ALL";
-        const string MODETRIPLEPLAY = "TRIPLEPLAY";
+        //const string MODETRIPLEPLAY = "TRIPLEPLAY";
         const int BANDS = 0;
-        const int STATES = 1;
+        //const int STATES = 1;
         int gridHeadersColumn = Properties.Settings.Default.GridHeadersColumn; // what we display for the column headers on the grid
         bool gridHeadersDraw = true;
         string lastSelectedMode = "";
@@ -36,7 +36,7 @@ namespace LOTWQSL
             bandStates = new HashSet<string>();
             //bandCountries = new HashSet<string>();
             modes = new HashSet<string>();
-            modeIsWAS = new Dictionary<string, bool>();
+            //modeIsWAS = new Dictionary<string, bool>();
             //countries = new SortedDictionary<string, int>();
             StatesLoad();
             //countriesLoad();
@@ -44,6 +44,7 @@ namespace LOTWQSL
 
         private void GridForm_Load(object sender, EventArgs e)
         {
+            ExtensionMethods.DoubleBuffered(dataGridView1, true);
             BandsLoad();
             this.Top = Properties.Settings.Default.GridRestoreBounds.Top;
             this.Left = Properties.Settings.Default.GridRestoreBounds.Left;
@@ -68,7 +69,8 @@ namespace LOTWQSL
             }
             foreach (DataGridViewColumn column in dataGridView1.Columns)
             {
-                column.Width = 35;
+                if (column.Index == 0) column.Width = 50;
+                else column.Width = 35;
                 //column.DefaultCellStyle.Font = new Font("Arial", 6,);
             }
             /*
@@ -160,7 +162,8 @@ namespace LOTWQSL
                 //bands.Add("160M");
                 "ALL",
                 "Digital",
-                "TriplePlay"
+                "TriplePlay",
+                "5-Band WAS"
             };
             //parseModes(); // this will add all used bands
         }
@@ -280,6 +283,11 @@ namespace LOTWQSL
         */
         public void FillGrid()
         {
+            //dataGridView1.SuspendLayout();
+            foreach (DataGridViewColumn c in dataGridView1.Columns)
+            {
+                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            }
             Cursor.Current = Cursors.WaitCursor;
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.ColumnHeadersVisible = false;
@@ -290,11 +298,13 @@ namespace LOTWQSL
                 ParseBandMode(band, mode);
                 if (stategrid)
                 {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
                     foreach (string state in states)
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
                     {
                         HashSet<string> statesRemaining = StatesRemain(bandStates);
                         gridIsDrawn = false;
-                        FillGrid(true,band, statesRemaining);
+                        FillGrid(band, statesRemaining);
                     }
                 }
                     /*  Not implemented -- how can we represent countries?
@@ -313,8 +323,12 @@ namespace LOTWQSL
             dataGridView1.ColumnHeadersVisible = true;
             dataGridView1.AutoSize = true;
             Cursor.Current = Cursors.Default;
+            foreach (DataGridViewColumn c in dataGridView1.Columns)
+            {
+                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            }
+            //.ResumeLayout();
         }
-
 
         private void FillGridRowByState(int iCell, HashSet<string> statesRemaining)
         {
@@ -332,7 +346,7 @@ namespace LOTWQSL
                     if (statesRemaining.Contains(valueToCheck))
                     {
                         row.Cells[iCell].Value = "N";
-                        row.Cells[iCell].Style.BackColor = Color.Red;
+                        //row.Cells[iCell].Style.BackColor = Color.Red;
                     }
                     else
                     {
@@ -341,7 +355,7 @@ namespace LOTWQSL
                             if (totalColumn == 0) // hiding and restoring was showing extra columns
                             {
                                 row.Cells[iCell].Value = "W";
-                                row.Cells[iCell].Style.BackColor = Color.Green;
+                                //row.Cells[iCell].Style.BackColor = Color.Green;
                                 ++worked;
                             }
                         }
@@ -371,6 +385,7 @@ namespace LOTWQSL
             foreach (DataGridViewColumn col in dataGridView1.Columns) 
             //foreach (DataGridViewRow row in dataGridView1.Rows)
             {
+                col.DefaultCellStyle.BackColor = Color.Green;
                 //if (row.Visible)
                 {
                     iCell = col.Index;
@@ -389,7 +404,7 @@ namespace LOTWQSL
                             if (totalColumn == 0) // hiding and restoring was showing extra columns
                             {
                                 row.Cells[iCell].Value = "W";
-                                row.Cells[iCell].Style.BackColor = Color.Green;
+                                //row.Cells[iCell].Style.BackColor = Color.Green;
                                 ++worked;
                             }
                         }
@@ -411,13 +426,12 @@ namespace LOTWQSL
             }
         }
 
-        private void FillGrid(Boolean byBand, string s, HashSet<string> statesRemaining)
+        private void FillGrid(string s, HashSet<string> statesRemaining)
         {
             if (gridIsDrawn) return;
             gridIsDrawn = true;
-            byBand = gridHeadersColumn == BANDS;
-            int iCell=-1;
-            iCell = bands.IndexOf(s);
+            bool byBand = gridHeadersColumn == BANDS;
+            int iCell = bands.IndexOf(s);
             if (byBand && gridHeadersDraw) // switch to bands in columns
             {
                 gridHeadersDraw = false;
@@ -493,6 +507,7 @@ namespace LOTWQSL
             comboBoxMode.Items.Insert(0, "ALL");
             modes.Add("Digital"); // we add them here but not to combobox since we already display these
             modes.Add("TriplePlay");
+            modes.Add("5-Band WAS");
             foreach (string s in MainWindow2.allWAS) // find all modes we have done
             {
                 string[] tokens = s.Split(new[] { ' ' });
@@ -508,6 +523,7 @@ namespace LOTWQSL
             }
         }
 
+        /*
         private void ParseBandMode2(string band, string mode)
         {
             bandStates.Clear();
@@ -527,6 +543,7 @@ namespace LOTWQSL
             //{
             //}
         }
+        */
         /*
         private void parseTriplePlay()
         {
@@ -612,15 +629,16 @@ namespace LOTWQSL
                 string myband = tokens[0];
                 string mymode = tokens[1];
                 string mystate = tokens[2];
-                LOTWmode.addCallsign(mystate, mymode);
+                LOTWmode.AddCallsign(mystate, mymode);
                 AddBand(myband);
                 //string myband = s.Substring(0, band.Length);
                 Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
-                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && band.Equals("Digital");
-                Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate) && band.Equals("TriplePlay");
+                Boolean isDigitalMode = LOTWmode.IsModeDigital(mymode) && band.Equals("Digital");
+                Boolean isTriplePlay = LOTWmode.IsTriplePlay(mystate) && band.Equals("TriplePlay");
+                Boolean is5BandWAS = LOTWmode.Is5BandWAS(myband) && band.Equals("5-Band WAS");
                 //if ((bandOK && modeOK) || (modeOK && isDigitalMode && ban|| isTriplePlay)
-                if ((bandOK && modeOK) || isTriplePlay || isDigitalMode)
+                if ((bandOK && modeOK) || isTriplePlay || isDigitalMode || is5BandWAS)
                 {
                     string state = s.Substring(s.Length - 2);
                     bandStates.Add(state);

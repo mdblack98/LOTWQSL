@@ -17,14 +17,14 @@ namespace LOTWQSL
 {
     public partial class MapForm : Form
     {
-        HashSet<string> bandStates; // this will be used by GetStyleForShape to determine which states to paint
-        HashSet<string> statesLabeled;
+        readonly HashSet<string> bandStates; // this will be used by GetStyleForShape to determine which states to paint
+        readonly HashSet<string> statesLabeled;
         bool flagFirst = true;
         public string bandSelected = String.Empty;
-        SharpMap.Layers.VectorLayer vlay; // our state outlines
+        readonly SharpMap.Layers.VectorLayer vlay; // our state outlines
         SharpMap.Layers.LabelLayer llay; // Our state labels
         List<string> states;
-        private List<string> modes; //All the modes in our ADIF file
+        private readonly List<string> modes; //All the modes in our ADIF file
         bool modeCanChange = false;
         string modeSelected = MODEALL;
         double myLat = Properties.Settings.Default.Latitude;
@@ -35,10 +35,11 @@ namespace LOTWQSL
         public Color fontStateColor = Properties.Settings.Default.FontStateColor;
         public Font fontAzimuthLabel = Properties.Settings.Default.AzimuthLabelFont;
         public Color fontAzimuthColor = Properties.Settings.Default.AzimuthLabelColor;
-        Dictionary<string, bool> modeIsWAS;
+        readonly Dictionary<string, bool> modeIsWAS;
         const string MODEALL = "ALL";
         const string BANDALL = "All";
         const string BANDTRIPLEPLAY = "TriplePlay";
+        const string BAND5BANDWAS = "5-Band WAS";
 
         public MapForm()
         {
@@ -150,6 +151,7 @@ namespace LOTWQSL
             modes.Add(MODEALL);
             modes.Add("DIGITAL");
             modes.Add("TRIPLEPLAY");
+            modes.Add(BAND5BANDWAS);
             bool modeMatch = false;
             foreach (string s in MainWindow2.allWAS) // find all modes we have done
             {
@@ -293,9 +295,10 @@ namespace LOTWQSL
                 string thisBand = tokens[0];
                 string mode = tokens[1];
                 string state = tokens[2];
-                LOTWmode.addCallsign(state, mode);
-                bool isTriplePlay = LOTWmode.isTriplePlay(state);
-                if (thisBand.Equals(band) || band.Equals(BANDALL) || (band.Equals(BANDTRIPLEPLAY)&&isTriplePlay))
+                LOTWmode.AddCallsign(state, mode);
+                bool isTriplePlay = LOTWmode.IsTriplePlay(state);
+                bool is5BandWAS = LOTWmode.Is5BandWAS(thisBand);
+                if (thisBand.Equals(band) || band.Equals(BANDALL) || (band.Equals(BANDTRIPLEPLAY)&&isTriplePlay) || (band.Equals(BAND5BANDWAS)&&is5BandWAS))
                 {
                     string mystate = s.Substring(s.Length-2);
                     if (!bandStates.Contains(mystate))
@@ -310,7 +313,7 @@ namespace LOTWQSL
         private void ParseBandMode(string band, string mode)
         {
             LOTWMode LOTWmode = new LOTWMode();
-            if ((!mode.Equals("ALL") && !band.Equals("All")) && (!band.Equals("Digital") && !band.Equals("TriplePlay")))
+            if ((!mode.Equals("ALL") && !band.Equals("All")) && (!band.Equals("Digital") && !band.Equals("TriplePlay") && !band.Equals("5-Band WAS")))
             {
                 bandStates.Clear();
             }
@@ -322,12 +325,13 @@ namespace LOTWQSL
                 string myband = tokens[0];
                 string mymode = tokens[1];
                 string mystate = tokens[2];
-                LOTWmode.addCallsign(mystate, mymode);
+                LOTWmode.AddCallsign(mystate, mymode);
                 Boolean modeOK = s.Contains(mode) || mode.Equals(" " + MODEALL + " ");
                 Boolean bandOK = myband.Equals(band) || band.Equals(BANDALL);
-                Boolean isDigitalMode = LOTWmode.isModeDigital(mymode) && band.Contains("Digital");
-                Boolean isTriplePlay = LOTWmode.isTriplePlay(mystate) && band.Contains("TriplePlay");
-                if ((bandOK && modeOK) || isDigitalMode || isTriplePlay)
+                Boolean isDigitalMode = LOTWmode.IsModeDigital(mymode) && band.Contains("Digital");
+                Boolean isTriplePlay = LOTWmode.IsTriplePlay(mystate) && band.Contains("TriplePlay");
+                Boolean is5BandWAS = LOTWmode.Is5BandWAS(myband) && band.Contains("5-Band WAS");
+                if ((bandOK && modeOK) || isDigitalMode || isTriplePlay || is5BandWAS)
                 {
                     string state = s.Substring(s.Length - 2);
                     if (!bandStates.Contains(state))
@@ -348,7 +352,7 @@ namespace LOTWQSL
 
         private String LabelDelegate(FeatureDataRow row)
         {
-            String state = "";
+            String state;
             state = (String)row.ItemArray[3];
             return state;
         }
@@ -494,7 +498,7 @@ namespace LOTWQSL
         {
             button1.Enabled = false;
             bandSelected = comboBoxBand.Text;
-            if (bandSelected.Equals("TriplePlay") || bandSelected.Equals("Digital")) comboBoxMode.Enabled = false;
+            if (bandSelected.Equals("TriplePlay") || bandSelected.Equals("Digital") || bandSelected.Equals("5-Band WAS")) comboBoxMode.Enabled = false;
             else comboBoxMode.Enabled = true;
             ParseModes();
             Properties.Settings.Default.mapBand = bandSelected;

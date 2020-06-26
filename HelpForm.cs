@@ -26,7 +26,7 @@ namespace LOTWQSL
             webBrowser1.Url = new System.Uri(helpFile);
         }
 
-        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        private void WebBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
 
         }

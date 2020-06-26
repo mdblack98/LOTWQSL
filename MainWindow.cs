@@ -18,25 +18,24 @@ namespace LOTWQSL
 {
     public partial class MainWindow2 : Form
     {
-        MapForm mapForm = new MapForm();
-        GridForm gridForm = new GridForm();
+        readonly MapForm mapForm = new MapForm();
+        readonly GridForm gridForm = new GridForm();
         HelpForm help;
         string mylogin = String.Empty; // can be just callsign or callsign+callsign
         string mypassword = String.Empty;
         string sinceLOTW = String.Empty;
         string endLOTW = String.Empty;
         string keeperFile = String.Empty;
-        string appData = String.Empty;
-        string errorStr = String.Empty;
-        string sinceLOTWStart = String.Empty;
-        HashSet<string> history;
-        HashSet<string> callsigns;
+        readonly string appData = String.Empty;
+        //string errorStr = String.Empty;
+        readonly HashSet<string> history;
+        readonly HashSet<string> callsigns;
         //public static HashSet<string> states; // List contains State/Band/Mode
         public static HashSet<string> allWAS = new HashSet<string>();
-        HashSet<string> dxccMixed;
-        HashSet<string> dxccChallenge;
-        HashSet<string> dxccChallengeBands;
-        HashSet<string> prefixes;
+        readonly HashSet<string> dxccMixed;
+        readonly HashSet<string> dxccChallenge;
+        readonly HashSet<string> dxccChallengeBands;
+        readonly HashSet<string> prefixes;
         public static Dictionary<string, Dictionary<string, int>> popularStates;
         //Dictionary<string,int> popularCalls;
         int nstates = 0;
@@ -54,7 +53,7 @@ namespace LOTWQSL
             InitializeComponent();
             //InstallUpdateSyncWithInfo();
             appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LOTWQSL");
-            string s = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "W9MDB");
+            //string s = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "W9MDB");
             try
             {
                 if (!Directory.Exists(appData))
@@ -141,7 +140,7 @@ namespace LOTWQSL
             textBoxSince.Text = sinceLOTW;
             textBoxLogin.Text = mylogin; // this will force keeperLoad()
             textBoxPassword.Text = mypassword;
-            KeeperLoad(keeperFile);
+            KeeperLoad();
             timer1.Interval = 3000;
             timer1.Start();
             //Thread oThread = new Thread(new ThreadStart(checkForUpdate));
@@ -215,8 +214,9 @@ namespace LOTWQSL
             popularStates[state] = dict;
         }
 
-        void KeeperLoad(string callsign)
+        void KeeperLoad()
         {
+            string callsign;
             string lastDate = "19000101";
             allWAS.Clear();
             history.Clear();
@@ -461,7 +461,7 @@ namespace LOTWQSL
             string modegroup = "MODEGROUP";
             string qsodate = String.Empty;
             string timeon = String.Empty;
-            string creditGranted = String.Empty;
+            string creditGranted;
             string state = String.Empty;
             string country = String.Empty;
             string prefix = String.Empty;
@@ -480,8 +480,8 @@ namespace LOTWQSL
                 QSODate = QSODate.Substring(1);
                 textBoxSince.Text = QSODate;
             }
-            string QSODate2 = QSODate.Remove(7, 1); // we need this format to compare with the ADIF file
-            QSODate2 = QSODate2.Remove(4, 1);
+            //string QSODate2 = QSODate.Remove(7, 1); // we need this format to compare with the ADIF file
+            //QSODate2 = QSODate2.Remove(4, 1);
             qslMismatchStr = "";
             if (resetall)
             { // This indicates we're downloading the whole history so clear everything out
@@ -497,7 +497,7 @@ namespace LOTWQSL
                 {
                     MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
                     MessageBox.Show(ex.Message);
-                    errorStr = ex.Message;
+                    //errorStr = ex.Message;
                 }
                 dxccMixed.Clear();
                 dxccChallenge.Clear();
@@ -515,7 +515,7 @@ namespace LOTWQSL
             else
             {
                 // if not a reset then set our QSO date to the saved value
-                QSODate = Properties.Settings.Default.QSODate;
+                //QSODate = Properties.Settings.Default.QSODate;
             }
             // No longer accurate with random ADIF files
             //richTextBox1.AppendText("QSO Start: " + QSODate + "\n");
@@ -949,7 +949,7 @@ namespace LOTWQSL
         private string ReadAllLines(StreamReader reader)
         {
             StringBuilder sb = new StringBuilder();
-            string line = string.Empty;
+            string line;
             int n = 0;
             richTextBox1.AppendText("Downloading log...\r");
             
@@ -965,9 +965,9 @@ namespace LOTWQSL
                     {
                         this.Update();
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        errorStr = e.Message;
+                        //errorStr = e.Message;
                     }
                 }
             }
@@ -978,7 +978,7 @@ namespace LOTWQSL
         private void GetLOTW()
         {
             sinceLOTW = textBoxSince.Text;
-            string startDate = "";
+            string startDate;
             if (sinceLOTW.Substring(0, 1) == "!") // then we reset things
             {
                 sinceLOTW = sinceLOTW.Substring(1);
@@ -1040,9 +1040,9 @@ namespace LOTWQSL
                 {
                     MainWindow2.ActiveForm.Update();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    errorStr = e.Message;
+                    //errorStr = e.Message;
                 }
                 MyWebClient client = new MyWebClient();
                 ServicePointManager.Expect100Continue = true;
@@ -1061,9 +1061,9 @@ namespace LOTWQSL
                     {
                         MainWindow2.ActiveForm.Update();
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        errorStr = e.Message;
+                        //errorStr = e.Message;
                     }
                     data.ReadTimeout = 60 * 120 * 1000; // 2 hour timeout
                     using (BufferedStream buffer = new BufferedStream(data,4096*64))
@@ -1143,7 +1143,7 @@ namespace LOTWQSL
             {
                 mylogin = textBoxLogin.Text;
                 string call1 = mylogin; // by default
-                string call2 = string.Empty;
+                string call2;
                 // we've change logins -- check if asking for added callsign filter
                 if (mylogin.Contains("+"))
                 {
@@ -1167,13 +1167,14 @@ namespace LOTWQSL
                 {
                     keeperFile = appData + "\\" + mylogin.Replace('/','_') + ".txt";
                 }
-                KeeperLoad(keeperFile);
+                KeeperLoad();
                 Properties.Settings.Default.login = mylogin;
                 Properties.Settings.Default.Save();
             }
         }
 
-        private void Password_Get(String call, String passwordList)
+        /*
+        private void Password_Get(String passwordList)
         {
             passwordList = "w9mdb:mdb001;w9mdb@w9mdb:mdb002";
             String[] tokens = passwordList.Split(';');
@@ -1182,6 +1183,7 @@ namespace LOTWQSL
 
             }
         }
+        */
 
         private void Password_TextChanged(object sender, EventArgs e)
         {
@@ -1301,9 +1303,10 @@ namespace LOTWQSL
             Cursor.Current = Cursors.Default;
         }
 
+        /*
         private void InstallUpdateSyncWithInfo()
         {
-            UpdateCheckInfo info = null;
+            UpdateCheckInfo info;
 
             if (ApplicationDeployment.IsNetworkDeployed)
             {
@@ -1374,6 +1377,7 @@ namespace LOTWQSL
                 }
             }
         }
+        */
 
         private void ButtonGrid_Click(object sender, EventArgs e)
         {

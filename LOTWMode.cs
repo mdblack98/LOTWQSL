@@ -66,15 +66,14 @@ WSPR	DATA
     {
         public enum MODES { CW, PHONE, DIGITAL };
 
-        int TRIPLEPLAY = 0;
-
-        List<String> cw      = new List<string>(); 
-        List<String> digital = new List<string>();
-        List<String> phone   = new List<string>();
-        Dictionary<String, int> tripleplay = new Dictionary<String, int>();
-        int modeCW = 0;
-        int modeDIGITAL = 0;
-        int modePHONE = 0;
+        readonly int TRIPLEPLAY = 0;
+        readonly List<String> cw      = new List<string>();
+        readonly List<String> digital = new List<string>();
+        readonly List<String> phone   = new List<string>();
+        readonly Dictionary<String, int> tripleplay = new Dictionary<String, int>();
+        readonly int modeCW = 1;
+        readonly int modeDIGITAL = 2;
+        readonly int modePHONE = 3;
         public LOTWMode()
         {
             StreamReader reader = new StreamReader("lotwmodes.txt");
@@ -105,54 +104,61 @@ WSPR	DATA
         //{
         //}
 
+        /*
         void Clear()
         {
             tripleplay.Clear();
         }
+        */
 
-        public bool isModeCW(String mode)
+        public bool IsModeCW(String mode)
         {
             return cw.Contains(mode.ToUpper());
         }
 
-        public bool isModeDigital(String mode)
+        public bool IsModeDigital(String mode)
         {
             return digital.Contains(mode.ToUpper());
         }
 
-        public bool isModePhone(String mode)
+        public bool IsModePhone(String mode)
         {
             return phone.Contains(mode.ToUpper());
         }
 
-        public bool isTriplePlay(String callsign)
+        public bool IsTriplePlay(String callsign)
         {
             return tripleplay[callsign] == TRIPLEPLAY;
         }
 
-        public int whichMode(String mode)
+        public bool Is5BandWAS(string band)
         {
-            if (isModeCW(mode))      return modeCW;
-            if (isModePhone(mode))   return modePHONE;
-            if (isModeDigital(mode)) return modeDIGITAL;
+            return "10M15M20M40M80M".Contains(band);
+        }
+
+        public int WhichMode(String mode)
+        {
+            if (IsModeCW(mode))      return modeCW;
+            if (IsModePhone(mode))   return modePHONE;
+            if (IsModeDigital(mode)) return modeDIGITAL;
             return 0;
         }
 
-        public void addCallsign(String state, String mode)
+        public void AddCallsign(String state, String mode)
         {
             state = state.ToUpper();
             if (tripleplay.ContainsKey(state))
             {
-                int n = 0;
-                tripleplay[state] |= whichMode(mode);
-                if (isTriplePlay(state))
-                {
-                    ++n;
-                }
+                //int n = 0;
+                tripleplay[state] |= WhichMode(mode);
+                //if (IsTriplePlay(state))
+                //{
+                //    ++n;
+                //}
             }
             else
             {
-                tripleplay.Add(state, whichMode(mode));
+                tripleplay.Add(state, WhichMode(mode));
             }
         }
     }

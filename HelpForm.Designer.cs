@@ -43,7 +43,7 @@ namespace LOTWQSL
             this.webBrowser1.TabStop = false;
             this.webBrowser1.Url = new System.Uri("file:C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\LO" +
         "TWQSLHelp.htm", System.UriKind.Absolute);
-            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
+            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.WebBrowser1_DocumentCompleted);
             // 
             // HelpForm
             // 

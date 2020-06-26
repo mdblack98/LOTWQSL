@@ -69,7 +69,8 @@
             this.comboBoxBand.Items.AddRange(new object[] {
             "All",
             "Digital",
-            "TriplePlay"});
+            "TriplePlay",
+            "5-Band WAS"});
             this.comboBoxBand.Location = new System.Drawing.Point(9, 12);
             this.comboBoxBand.Name = "comboBoxBand";
             this.comboBoxBand.Size = new System.Drawing.Size(72, 21);
