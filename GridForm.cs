@@ -300,7 +300,7 @@ namespace LOTWQSL
                 if (stategrid)
                 {
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-                    foreach (string state in states)
+                    //foreach (string state in states)
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
                     {
                         HashSet<string> statesRemaining = StatesRemain(bandStates);
@@ -698,7 +698,7 @@ namespace LOTWQSL
 */
         private void ButtonRefresh_Click(object sender, EventArgs e)
         {
-            gridIsDrawn = false;
+            //gridIsDrawn = false;
             if (comboBoxMode.SelectedItem == null)
             {
                 comboBoxMode.SelectedItem = comboBoxMode.Items.IndexOf("ALL");
