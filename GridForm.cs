@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -285,6 +286,8 @@ namespace LOTWQSL
         */
         public void FillGrid()
         {
+            Cursor.Current = Cursors.WaitCursor;
+            Thread.Sleep(1);
             // Turn off autosize for speed -- along with double buffering reduced
             // load time from over 10 seconds to 1 second.
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
@@ -327,7 +330,7 @@ namespace LOTWQSL
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
+            Cursor.Current = Cursors.Default;
         }
 
         private void FillGridRowByState(int iCell, HashSet<string> statesRemaining)
