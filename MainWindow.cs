@@ -376,7 +376,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 199; // Matches 3-digit version number
+            int currentVersion = 200; // Matches 3-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -1382,6 +1382,7 @@ namespace LOTWQSL
         private void ButtonGrid_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
+            Application.DoEvents();
             gridForm.Show();
             if (gridForm.WindowState == FormWindowState.Minimized)
             {

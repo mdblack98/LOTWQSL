@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "LOTWQSL"
-#define MyAppVersion "1.9.9"
+#define MyAppVersion "1.10"
 #define MyAppPublisher "W9MDB"
 #define MyAppURL "http://qrz.com/db/W9MDB"
 #define MyAppExeName "LOTWQSL.exe"
@@ -19,7 +19,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 OutputBaseFilename=LOTWQSLSetup
 Compression=lzma

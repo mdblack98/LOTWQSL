@@ -514,6 +514,7 @@ namespace LOTWQSL
                 string band = tokens[0];
                 string mode = tokens[1];
                 AddBand(band);
+                if (mode.Equals("DATA")) continue;
                 if (!modes.Contains(mode))
                 {
                     modes.Add(mode);

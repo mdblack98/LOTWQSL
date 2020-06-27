@@ -179,7 +179,7 @@
             this.Column41.HeaderText = "70cm";
             this.Column41.Name = "Column41";
             this.Column41.ReadOnly = true;
-            this.Column41.Width = 57;
+            this.Column41.Width = 58;
             // 
             // Column42
             // 
@@ -306,7 +306,7 @@
             this.ALL.ReadOnly = true;
             this.ALL.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.ALL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ALL.Width = 30;
+            this.ALL.Width = 32;
             // 
             // Column1
             // 
@@ -639,6 +639,7 @@
             // 
             // buttonRefresh
             // 
+            this.buttonRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.buttonRefresh.Location = new System.Drawing.Point(91, 13);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(75, 23);

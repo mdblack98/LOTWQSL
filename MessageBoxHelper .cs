@@ -26,15 +26,13 @@ internal static class MessageBoxHelper
 
         private int CenterMessageCallBack(int message, int wParam, int lParam)
         {
-            NativeMethods.RECT formRect;
-            NativeMethods.RECT messageBoxRect;
             int xPos;
             int yPos;
 
             if (message == 5)
             {
-                NativeMethods.GetWindowRect(parentFormHandle, out formRect);
-                NativeMethods.GetWindowRect(new IntPtr(wParam), out messageBoxRect);
+                NativeMethods.GetWindowRect(parentFormHandle, out NativeMethods.RECT formRect);
+                NativeMethods.GetWindowRect(new IntPtr(wParam), out NativeMethods.RECT messageBoxRect);
 
                 xPos = (int)((formRect.Left + (formRect.Right - formRect.Left) / 2) - ((messageBoxRect.Right - messageBoxRect.Left) / 2));
                 yPos = (int)((formRect.Top + (formRect.Bottom - formRect.Top) / 2) - ((messageBoxRect.Bottom - messageBoxRect.Top) / 2));
