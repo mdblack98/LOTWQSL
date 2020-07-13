@@ -288,10 +288,13 @@ namespace LOTWQSL
         {
             Cursor.Current = Cursors.WaitCursor;
             Thread.Sleep(1);
+            dataGridView1.SuspendLayout();
             // Turn off autosize for speed -- along with double buffering reduced
             // load time from over 10 seconds to 1 second.
+            //dataGridView1.ScrollBars = ScrollBars.None;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            //dataGridView1.AutoSize = false;
             Cursor.Current = Cursors.WaitCursor;
             //dataGridView1.RowHeadersVisible = false;
             //dataGridView1.ColumnHeadersVisible = false;
@@ -306,6 +309,7 @@ namespace LOTWQSL
                     //foreach (string state in states)
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
                     {
+                        //dataGridView1.AutoSize = false;
                         HashSet<string> statesRemaining = StatesRemain(bandStates);
                         gridIsDrawn = false;
                         FillGrid(band, statesRemaining);
@@ -325,11 +329,13 @@ namespace LOTWQSL
             LoadToolTips();
             //dataGridView1.RowHeadersVisible = true;
             //dataGridView1.ColumnHeadersVisible = true;
-            dataGridView1.AutoSize = true;
+            //dataGridView1.AutoSize = true;
             Cursor.Current = Cursors.Default;
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            //dataGridView1.ScrollBars = ScrollBars.None;
+            dataGridView1.ResumeLayout();
             Cursor.Current = Cursors.Default;
         }
 
@@ -388,7 +394,10 @@ namespace LOTWQSL
             foreach (DataGridViewColumn col in dataGridView1.Columns) 
             //foreach (DataGridViewRow row in dataGridView1.Rows)
             {
+                if (statesRemaining.Count <=25)
                 col.DefaultCellStyle.BackColor = Color.Green;
+                else
+                    col.DefaultCellStyle.BackColor = Color.Red;
                 //if (row.Visible)
                 {
                     iCell = col.Index;
@@ -398,7 +407,8 @@ namespace LOTWQSL
                     if (statesRemaining.Contains(valueToCheck))
                     {
                         row.Cells[iCell].Value = "N";
-                        row.Cells[iCell].Style.BackColor = Color.Red;
+                        if (row.Cells[iCell].Style.BackColor != Color.Red)
+                          row.Cells[iCell].Style.BackColor = Color.Red;
                     }
                     else
                     {
@@ -407,7 +417,8 @@ namespace LOTWQSL
                             if (totalColumn == 0) // hiding and restoring was showing extra columns
                             {
                                 row.Cells[iCell].Value = "W";
-                                //row.Cells[iCell].Style.BackColor = Color.Green;
+                                if (row.Cells[iCell].Style.BackColor != Color.Green)
+                                    row.Cells[iCell].Style.BackColor = Color.Green;
                                 ++worked;
                             }
                         }
