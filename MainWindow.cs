@@ -376,7 +376,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 200; // Matches 3-digit version number
+            int currentVersion = 1100; // Matches 4-digit version number
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -468,9 +468,9 @@ namespace LOTWQSL
 
             Cursor.Current = Cursors.WaitCursor;
 
-            richTextBox1.Clear();
+            //richTextBox1.Clear();
             bool qsl_rcvd = false;
-            richTextBox1.AppendText("Processing ADIF file\n");
+            richTextBox1.AppendText(" Processing ADIF file\n");
             this.Update();
             string QSODate = textBoxSince.Text;
             bool resetall = QSODate.Equals("1900-01-01") || QSODate.Substring(0, 1) == "!";
@@ -783,6 +783,7 @@ namespace LOTWQSL
                     }
                     if (newDXCC)
                     {
+                        updateFile = true;
                         //if (verbose)
                         //{
                         //    richTextBox1.AppendText("  New DXCC: " + dxccinfo + "\n");
@@ -977,6 +978,7 @@ namespace LOTWQSL
 
         private void GetLOTW()
         {
+            richTextBox1.Clear();
             sinceLOTW = textBoxSince.Text;
             string startDate;
             if (sinceLOTW.Substring(0, 1) == "!") // then we reset things
@@ -1029,16 +1031,24 @@ namespace LOTWQSL
             //string[] lines = new string[] {""};
             try
             {
-                richTextBox1.Clear();
                 DateTime mydate = DateTime.UtcNow;
                 richTextBox1.AppendText(mydate.ToString() + "\n");
                 richTextBox1.AppendText("Requesting LOTW data...please be patient...\nThis can take several minutes\n");
                 richTextBox1.AppendText(uri + "\n");
-                Clipboard.SetText(uri);
-                richTextBox1.AppendText("URL copied to clipboard\n");
+                try {
+                    // https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed#5795061
+                    //Clipboard.SetText(uri);
+                    Clipboard.SetDataObject(uri, true, 10, 100);
+                    richTextBox1.AppendText("URL copied to clipboard\n");
+                }
+                catch
+                {
+                    // do nothing if clipboard fails
+                }
                 try
                 {
-                    MainWindow2.ActiveForm.Update();
+                    if (MainWindow2.ActiveForm != null)
+                        MainWindow2.ActiveForm.Update();
                 }
                 catch (Exception)
                 {
@@ -1059,7 +1069,8 @@ namespace LOTWQSL
                     richTextBox1.AppendText("Request accepted...reading ADI data\n");
                     try
                     {
-                        MainWindow2.ActiveForm.Update();
+                        if (MainWindow2.ActiveForm != null)
+                            MainWindow2.ActiveForm.Update();
                     }
                     catch (Exception)
                     {

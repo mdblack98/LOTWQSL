@@ -94,6 +94,7 @@ namespace LOTWQSL
             modeSelected = Properties.Settings.Default.GridMode2;
             ParseModes();
             comboBoxMode.SelectedIndex = comboBoxMode.Items.IndexOf(modeSelected);
+            Application.DoEvents();
             FillGrid();
         }
 
@@ -166,7 +167,7 @@ namespace LOTWQSL
                 "ALL",
                 "Digital",
                 "TriplePlay",
-                "5-Band WAS"
+                //"5-Band WAS"
             };
             //parseModes(); // this will add all used bands
         }
@@ -346,6 +347,10 @@ namespace LOTWQSL
             //foreach (DataGridViewColumn col in dataGridView1.Columns) 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
+                if (statesRemaining.Count <= 25)
+                    row.DefaultCellStyle.BackColor = Color.Green;
+                else
+                    row.DefaultCellStyle.BackColor = Color.Red;
                 //if (row.Visible)
                 {
                     //col.Selected = false;
@@ -355,7 +360,8 @@ namespace LOTWQSL
                     if (statesRemaining.Contains(valueToCheck))
                     {
                         row.Cells[iCell].Value = "N";
-                        //row.Cells[iCell].Style.BackColor = Color.Red;
+                        if (row.DefaultCellStyle.BackColor == Color.Green)
+                            row.Cells[iCell].Style.BackColor = Color.Red;
                     }
                     else
                     {
@@ -364,7 +370,8 @@ namespace LOTWQSL
                             if (totalColumn == 0) // hiding and restoring was showing extra columns
                             {
                                 row.Cells[iCell].Value = "W";
-                                //row.Cells[iCell].Style.BackColor = Color.Green;
+                                if (row.DefaultCellStyle.BackColor == Color.Red)
+                                    row.Cells[iCell].Style.BackColor = Color.Green;
                                 ++worked;
                             }
                         }
@@ -377,7 +384,8 @@ namespace LOTWQSL
                                 Font = new Font(dataGridView1.Font, FontStyle.Bold)
                             };
                             row.Cells[iCell].Style.Font = style.Font;
-                            row.Cells[iCell].Style.BackColor = Color.Red;
+                            if (row.DefaultCellStyle.BackColor == Color.Green)
+                                row.Cells[iCell].Style.BackColor = Color.Red;
                             if (worked >= 50) row.Cells[iCell].Style.BackColor = Color.LightGreen;
                             else if (worked == 51) row.Cells[iCell].Style.BackColor = Color.Green;
                         }
@@ -501,7 +509,7 @@ namespace LOTWQSL
                         dataGridView1.Rows[j].HeaderCell.Value = "ALL";
                     }
                 }
-                return;
+                //return;
             }
             if (byBand)
             {
@@ -521,7 +529,7 @@ namespace LOTWQSL
             comboBoxMode.Items.Insert(0, "ALL");
             modes.Add("Digital"); // we add them here but not to combobox since we already display these
             modes.Add("TriplePlay");
-            modes.Add("5-Band WAS");
+            //modes.Add("5-Band WAS");
             foreach (string s in MainWindow2.allWAS) // find all modes we have done
             {
                 string[] tokens = s.Split(new[] { ' ' });
