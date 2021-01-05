@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Deployment.Application;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 //Can't do the snk file as the dlls we use are strong named
@@ -263,8 +267,14 @@ namespace LOTWQSL
                         {
                             allWAS.Add(tokens[1]);
                         }
-                        ++nqsls;
-                        history.Add(tokens[0]);
+                        if (history.Add(tokens[0]))
+                        {
+                            nqsls++;
+                        }
+                        else
+                        {
+                            richTextBox1.AppendText("Duplicate " + tokens[0] +"\n");
+                        }
                         // [0] = "20131203 13:19 40M JT65 AJ4HW"
                         var tokens1 = tokens[0].Split(' ');
                         callsign = tokens1[4];
@@ -376,7 +386,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 1100; // Matches 4-digit version number
+            int currentVersion = 1110; // Matches 4-digit version number e.g. 1.10 = 1100
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
@@ -454,6 +464,7 @@ namespace LOTWQSL
             int nLines = 0;
             int nNew = 0;
             int nQslMismatches = 0;
+            int nAdded = 0;
             int nHistory = history.Count();
             string callsign = String.Empty;
             string band = String.Empty;
@@ -704,10 +715,12 @@ namespace LOTWQSL
                             }
                         }
                     }
+                    updateFile = false;
                     if (!history.Contains(key) && qsl_rcvd)
                     {
                         {
                             history.Add(key);
+                            ++nNew;
                             if (!state.Equals(String.Empty) && country.Equals("USA"))
                             {
                                 //country = String.Empty;
@@ -802,7 +815,6 @@ namespace LOTWQSL
                         //file.WriteLine(key + "," + wasinfo + "," + dxccinfo + "," + prefix);
                         //file.Close();
                         updateFileData += key + "," + wasinfo + "," + dxccinfo + "," + prefix + "\n";
-                        ++nNew;
                     }
                     else
                     {
@@ -815,12 +827,17 @@ namespace LOTWQSL
                     qslMisMatch = false;
                 }
             }
-            if (updateFile)
+            if (updateFileData.Length > 0)
             {
-                StreamWriter file = File.AppendText(keeperFile);
-                //file.WriteLine(key + "," + wasinfo + "," + dxccinfo + "," + prefix);
-                file.Write(updateFileData);
-                file.Close();
+                // Only update if we don't already have it...we were getting dups for some reason
+                //if (!history.Contains(updateFileData))
+                {
+                    StreamWriter file = File.AppendText(keeperFile);
+                    //file.WriteLine(key + "," + wasinfo + "," + dxccinfo + "," + prefix);
+                    file.Write(updateFileData);
+                    file.Close();
+                    updateFileData = "";
+                }
             }
 
             //if (nLines >= 500) richTextBox1.Undo();
@@ -838,7 +855,7 @@ namespace LOTWQSL
             {
                 richTextBox1.AppendText("No New QSLs\n");
             }
-            string bumpup = (history.Count() - nHistory).ToString();
+            string bumpup = nNew.ToString();
             richTextBox1.AppendText(history.Count() + " QSLs \t" + "+" + bumpup + "\n");
 
             bumpup = (ncallsigns == callsigns.Count()) ? "+0" : ("+" + (callsigns.Count() - ncallsigns));
@@ -947,21 +964,35 @@ namespace LOTWQSL
         }
          * */
 
-        private string ReadAllLines(StreamReader reader)
+        private async System.Threading.Tasks.Task<string> ReadAllLinesAsync(StreamReader reader)
         {
             StringBuilder sb = new StringBuilder();
             string line;
             int n = 0;
-            richTextBox1.AppendText("Downloading log...\r");
-            
-            while ((line = reader.ReadLine()) != null)
+            int nqsls = 0;
+            richTextBox1.AppendText("Downloading LOTW ADIF file...\r");
+            //richTextBox1.AppendText("If over 500KB this can be VERY slow...\r");
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Reset();
+            stopWatch.Start();
+            int ninterval = 100;
+            while ((line = await reader.ReadLineAsync()) != null)
             {
+                if (line.Contains("<CALL:")) ++nqsls;
                 sb.Append(line+"\n");
                 ++n;
-                if ((n % 1000) == 0)
+                if ((n % ninterval) == 0)
                 {
-                    if (n > 1000) richTextBox1.Undo();
-                    richTextBox1.AppendText("# lines="+n+"\r");
+                    if (n > 100) richTextBox1.Undo();
+                    TimeSpan myTime = TimeSpan.FromSeconds(stopWatch.ElapsedMilliseconds/1000.0);
+
+                    //                    string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                    string elapsed = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                                    myTime.Hours,
+                                    myTime.Minutes,
+                                    myTime.Seconds);
+                    richTextBox1.AppendText("Elapsed " + elapsed + ", # lines="+n+ ", #QSLs=" + nqsls + "\r");
+                    Application.DoEvents();
                     try
                     {
                         this.Update();
@@ -972,11 +1003,20 @@ namespace LOTWQSL
                     }
                 }
             }
-            if (n >= 1000) richTextBox1.Undo();
+            if (n >= ninterval) richTextBox1.Undo();
+            TimeSpan myTime2 = TimeSpan.FromSeconds(stopWatch.ElapsedMilliseconds / 1000.0);
+
+            //                    string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+            string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                            myTime2.Hours,
+                            myTime2.Minutes,
+                            myTime2.Seconds);
+            richTextBox1.AppendText("Done: Elapsed " + answer + ", # lines=" + n + ", #QSLs=" + nqsls + "\r");
+            stopWatch.Stop();
+            Application.DoEvents();
             return sb.ToString();
         }
-
-        private void GetLOTW()
+        private async System.Threading.Tasks.Task GetLOTWAsync()
         {
             richTextBox1.Clear();
             sinceLOTW = textBoxSince.Text;
@@ -1061,10 +1101,16 @@ namespace LOTWQSL
                        | SecurityProtocolType.Tls12;
                 //       | SecurityProtocolType.Ssl3;                // Without adding a header it seemed like LOTW was not liking very many queries together while debugging
                 client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0");
-                System.Net.WebRequest.DefaultWebProxy = WebRequest.DefaultWebProxy;
-                client.Proxy = System.Net.WebRequest.DefaultWebProxy;
-                
-                using (Stream data = client.OpenRead(uri))
+                System.Net.WebRequest.DefaultWebProxy = null;
+                client.Proxy = null;
+                //Stopwatch timer1 = new Stopwatch();
+                //timer1.Start();
+                //await FnDownloadStringWithoutWebRequest(uri);
+                //timer1.Stop();
+                //double seconds = timer1.ElapsedMilliseconds / 1000.0;
+                //uri = "https://www.dropbox.com/s/c9st6ospq3147o6/lotw.adi?dl=1";
+                //using (Stream data = client.OpenRead(uri))
+                using (var data = await client.OpenReadTaskAsync(new Uri(uri)))
                 {
                     richTextBox1.AppendText("Request accepted...reading ADI data\n");
                     try
@@ -1081,7 +1127,7 @@ namespace LOTWQSL
                     {
                         using (StreamReader reader = new StreamReader(buffer))
                         {
-                            responseData = ReadAllLines(reader);
+                            responseData = await ReadAllLinesAsync(reader);
                         }
                     }
                 
@@ -1279,7 +1325,7 @@ namespace LOTWQSL
                 }
             }
             Cursor.Current = Cursors.WaitCursor;
-            GetLOTW();
+            GetLOTWAsync();
             if (gridForm.IsHandleCreated)
             {
                 gridForm.FillGrid();
