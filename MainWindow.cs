@@ -216,7 +216,6 @@ namespace LOTWQSL
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Rectangle restore;
             if (gridForm.IsHandleCreated)
             {
                 //WindowSaveLocationGrid();
@@ -501,7 +500,6 @@ namespace LOTWQSL
             int nLines = 0;
             int nNew = 0;
             int nQslMismatches = 0;
-            int nAdded = 0;
             int nHistory = history.Count();
             string callsign = String.Empty;
             string band = String.Empty;
