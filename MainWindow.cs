@@ -120,6 +120,7 @@ namespace LOTWQSL
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            /*
             this.Top = Properties.Settings.Default.RestoreBounds.Top;
             this.Left = Properties.Settings.Default.RestoreBounds.Left;
             this.Height = Properties.Settings.Default.RestoreBounds.Height;
@@ -139,6 +140,8 @@ namespace LOTWQSL
                 this.Top = 0;
                 this.Left = 0;
             }
+            */
+            WindowLoadLocationMain();
             sinceLOTW = Properties.Settings.Default.lastLOTW;
             //sinceLOTWStart = Properties.Settings.Default.
             textBoxSince.Text = sinceLOTW;
@@ -155,8 +158,8 @@ namespace LOTWQSL
             toolTip1.SetToolTip(this.textBoxPassword, "Your LOTW password");
             toolTip1.SetToolTip(this.labelPassword, "Your LOTW password");
             toolTip1.SetToolTip(this.buttonHelp, "Help");
-            toolTip1.SetToolTip(this.textBoxSince, "QSL since date YYYY-MM-DD\n(updates itself automatically)\n1900-01-01 resets everything");
-            toolTip1.SetToolTip(this.labelSince, "QSL since date YYYY-MM-DD\n(updates itself automatically)\n1900-01-01 resets everything");
+            toolTip1.SetToolTip(this.textBoxSince, "QSL since date YYYY-MM-DD\n(updates itself automatically)");
+            toolTip1.SetToolTip(this.labelSince, "QSL since date YYYY-MM-DD\n(updates itself automatically)");
             toolTip1.SetToolTip(this.textBoxEnd, "QSL end date YYYY-MM-DD\nOnly needed if having download problems\nto limit # of QSOs");
             toolTip1.SetToolTip(this.labelEnd, "QSL end date YYYY-MM-DD\nOnly needed if having download problems\nto limit # of QSOs");
             toolTip1.SetToolTip(this.buttonRefresh, "Download new LOTW QSLs");
@@ -164,34 +167,68 @@ namespace LOTWQSL
             toolTip1.SetToolTip(this.buttonGrid, "Show grid window");
         }
 
+        private void WindowLoadLocationMain()
+        {
+            if (Properties.Settings.Default.MaximizedMain)
+            {
+                WindowState = FormWindowState.Maximized;
+                Location = Properties.Settings.Default.LocationMain;
+                Size = Properties.Settings.Default.SizeMain;
+            }
+            else if (Properties.Settings.Default.MinimizedMain)
+            {
+                WindowState = FormWindowState.Minimized;
+                Location = Properties.Settings.Default.LocationMain;
+                Size = Properties.Settings.Default.SizeMain;
+            }
+            else
+            {
+                Location = Properties.Settings.Default.LocationMain;
+                Size = Properties.Settings.Default.SizeMain;
+            }
+        }
+
+        private void WindowSaveLocationMain()
+        {
+            if (WindowState == FormWindowState.Maximized)
+            {
+                Properties.Settings.Default.LocationMain = RestoreBounds.Location;
+                Properties.Settings.Default.SizeMain = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedMain = true;
+                Properties.Settings.Default.MinimizedMain = false;
+            }
+            else if (WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.LocationMain = Location;
+                Properties.Settings.Default.SizeMain = Size;
+                Properties.Settings.Default.MaximizedMain = false;
+                Properties.Settings.Default.MinimizedMain = false;
+            }
+            else
+            {
+                Properties.Settings.Default.LocationMain = RestoreBounds.Location;
+                Properties.Settings.Default.SizeMain = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedMain = false;
+                Properties.Settings.Default.MinimizedMain = true;
+            }
+            Properties.Settings.Default.Save();
+        }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Rectangle restore;
             if (gridForm.IsHandleCreated)
             {
-                gridForm.WindowState = FormWindowState.Normal;
-                gridForm.Update();
-                restore = new Rectangle(gridForm.Left, gridForm.Top, gridForm.Width, gridForm.Height);
-                Properties.Settings.Default.GridRestoreBounds = restore;
+                //WindowSaveLocationGrid();
             }
             gridForm.Close();
             if (mapForm.IsHandleCreated)
             {
-                mapForm.WindowState = FormWindowState.Normal;
-                mapForm.Update();
-                restore = new Rectangle(mapForm.Left, mapForm.Top, mapForm.Width, mapForm.Height);
-                Properties.Settings.Default.MapRestoreBounds = restore;
-                Properties.Settings.Default.StatesLabeled = mapForm.showLabels;
+                //WindowSaveLocationMap();
             }
             mapForm.Close();
-            this.WindowState = FormWindowState.Normal;
-            this.Update();
-            restore = new Rectangle(this.Left,this.Top,this.Width,this.Height);
-            Properties.Settings.Default.RestoreBounds = restore;
-            // RestoreBounds doesn't seemt to get the current location
-            //Properties.Settings.Default.RestoreBounds = this.RestoreBounds;
-            Properties.Settings.Default.lastLOTW = sinceLOTW;
-            Properties.Settings.Default.Save();
+
+            WindowSaveLocationMain();
         }
 
         void AddToPopular(string state,string callsign)
@@ -1281,7 +1318,8 @@ namespace LOTWQSL
                 ControlsEnable();
                 return;
             }
-            if (choose.GetChoice() != ADIFChoose.Source.LOTW)
+
+            if (choose.GetChoice() == ADIFChoose.Source.LOCAL)
             {
                 OpenFileDialog openFile = new OpenFileDialog()
                 {
@@ -1289,10 +1327,10 @@ namespace LOTWQSL
                 };
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    FileStream adif = new FileStream(openFile.FileName,FileMode.Open,FileAccess.Read);
+                    FileStream adif = new FileStream(openFile.FileName, FileMode.Open, FileAccess.Read);
                     StreamReader reader = new StreamReader(adif);
                     String responseData = reader.ReadToEnd();
-                        
+
                     DoADIF(ref responseData);
                     ControlsEnable();
                     return;
@@ -1303,10 +1341,14 @@ namespace LOTWQSL
                     return;
                 }
             }
+            else if (choose.GetChoice() == ADIFChoose.Source.LOTW_COMPLETE)
+            {
+                textBoxSince.Text = "1900-01-01";
+            }
             if (textBoxSince.Text.Equals("1900-01-01"))
             {
                 MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
-                if (MessageBox.Show("1900-01-01 will download your entire LOTW history...are you sure?", "New Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                if (MessageBox.Show("This will download your entire LOTW history...are you sure?", "New Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
                     ControlsEnable();
                     return;
@@ -1325,7 +1367,11 @@ namespace LOTWQSL
                 }
             }
             Cursor.Current = Cursors.WaitCursor;
-            GetLOTWAsync();
+            var task = GetLOTWAsync();
+            while (task.Status == TaskStatus.Running)
+            {
+                Thread.Sleep(100);
+            }
             if (gridForm.IsHandleCreated)
             {
                 gridForm.FillGrid();

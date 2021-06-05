@@ -65,29 +65,30 @@ namespace LOTWQSL
             }
         }
 
+        private void WindowLoadLocationMap()
+        {
+            if (Properties.Settings.Default.MaximizedMap)
+            {
+                WindowState = FormWindowState.Maximized;
+                Location = Properties.Settings.Default.LocationMap;
+                Size = Properties.Settings.Default.SizeMap;
+            }
+            else if (Properties.Settings.Default.MinimizedMap)
+            {
+                WindowState = FormWindowState.Minimized;
+                Location = Properties.Settings.Default.LocationMap;
+                Size = Properties.Settings.Default.SizeMap;
+            }
+            else
+            {
+                Location = Properties.Settings.Default.LocationMap;
+                Size = Properties.Settings.Default.SizeMap;
+            }
+        }
+
         private void MapForm_Load(object sender, EventArgs e)
         {
-            //mapBox1.Refresh();
-            this.Top = Properties.Settings.Default.MapRestoreBounds.Top;
-            this.Left = Properties.Settings.Default.MapRestoreBounds.Left;
-            this.Height = Properties.Settings.Default.MapRestoreBounds.Height;
-            this.Width = Properties.Settings.Default.MapRestoreBounds.Width;
-            if (this.Width < 200) this.Width = 200;
-            if (this.Height < 200) this.Height = 200;
-            Rectangle rect = SystemInformation.VirtualScreen;
-            if (this.Location.X < 0 || this.Location.Y < 0)
-            {
-                this.Top = 0;
-                this.Left = 0;
-                
-                //this.Width = 300;
-                //this.Height = 400;
-            }
-            if (this.Location.X > rect.Width || this.Location.Y > rect.Bottom)
-            {
-                this.Top = 0;
-                this.Left = 0;
-            }
+            WindowLoadLocationMap();
             bandSelected = Properties.Settings.Default.mapBand;
             comboBoxBand.SelectedIndex = comboBoxBand.FindStringExact(bandSelected);
             labelAzimuth.Font = fontAzimuthLabel;
@@ -517,8 +518,35 @@ namespace LOTWQSL
             mapBox1.Refresh();
         }
 
+        private void WindowSaveLocationMap()
+        {
+            if (WindowState == FormWindowState.Maximized)
+            {
+                Properties.Settings.Default.LocationMap = RestoreBounds.Location;
+                Properties.Settings.Default.SizeMap = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedMap = true;
+                Properties.Settings.Default.MinimizedMap = false;
+            }
+            else if (WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.LocationMap = Location;
+                Properties.Settings.Default.SizeMap = Size;
+                Properties.Settings.Default.MaximizedMap = false;
+                Properties.Settings.Default.MinimizedMap = false;
+            }
+            else
+            {
+                Properties.Settings.Default.LocationMap = RestoreBounds.Location;
+                Properties.Settings.Default.SizeMap = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedMap = false;
+                Properties.Settings.Default.MinimizedMap = true;
+            }
+            Properties.Settings.Default.Save();
+        }
+
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
+            WindowSaveLocationMap();
             if (e.CloseReason != CloseReason.UserClosing)
             {
                 return;

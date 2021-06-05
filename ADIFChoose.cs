@@ -12,20 +12,24 @@ namespace LOTWQSL
 {
     public partial class ADIFChoose : Form
     {
-        public enum Source { LOTW,LOCAL,CANCEL };
+        public enum Source { LOTW_UPDATE,LOTW_COMPLETE, LOCAL,CANCEL };
         public Source choice;
 
         public ADIFChoose()
         {
             InitializeComponent();
-            choice = Source.LOTW;
+            choice = Source.LOTW_UPDATE;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (radioButton1.Checked)
             {
-                choice = Source.LOTW;
+                choice = Source.LOTW_UPDATE;
+            }
+            else if (radioButton3.Checked)
+            {
+                choice = Source.LOTW_COMPLETE;
             }
             else
             {

@@ -12,7 +12,7 @@ namespace LOTWQSL.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -182,36 +182,36 @@ namespace LOTWQSL.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 292, 300")]
-        public global::System.Drawing.Rectangle RestoreBounds {
+        public global::System.Drawing.Rectangle RestoreBoundsOld {
             get {
-                return ((global::System.Drawing.Rectangle)(this["RestoreBounds"]));
+                return ((global::System.Drawing.Rectangle)(this["RestoreBoundsOld"]));
             }
             set {
-                this["RestoreBounds"] = value;
+                this["RestoreBoundsOld"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("400, 400")]
-        public string MapSize {
+        public string MapSizeOld {
             get {
-                return ((string)(this["MapSize"]));
+                return ((string)(this["MapSizeOld"]));
             }
             set {
-                this["MapSize"] = value;
+                this["MapSizeOld"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 200, 300")]
-        public global::System.Drawing.Rectangle MapRestoreBounds {
+        public global::System.Drawing.Rectangle MapRestoreBoundsOld {
             get {
-                return ((global::System.Drawing.Rectangle)(this["MapRestoreBounds"]));
+                return ((global::System.Drawing.Rectangle)(this["MapRestoreBoundsOld"]));
             }
             set {
-                this["MapRestoreBounds"] = value;
+                this["MapRestoreBoundsOld"] = value;
             }
         }
         
@@ -356,6 +356,150 @@ namespace LOTWQSL.Properties {
             }
             set {
                 this["GridMode2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point LocationGrid {
+            get {
+                return ((global::System.Drawing.Point)(this["LocationGrid"]));
+            }
+            set {
+                this["LocationGrid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point LocationMap {
+            get {
+                return ((global::System.Drawing.Point)(this["LocationMap"]));
+            }
+            set {
+                this["LocationMap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point LocationMain {
+            get {
+                return ((global::System.Drawing.Point)(this["LocationMain"]));
+            }
+            set {
+                this["LocationMain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400, 400")]
+        public global::System.Drawing.Size SizeGrid {
+            get {
+                return ((global::System.Drawing.Size)(this["SizeGrid"]));
+            }
+            set {
+                this["SizeGrid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400, 400")]
+        public global::System.Drawing.Size SizeMap {
+            get {
+                return ((global::System.Drawing.Size)(this["SizeMap"]));
+            }
+            set {
+                this["SizeMap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400, 400")]
+        public global::System.Drawing.Size SizeMain {
+            get {
+                return ((global::System.Drawing.Size)(this["SizeMain"]));
+            }
+            set {
+                this["SizeMain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MaximizedGrid {
+            get {
+                return ((bool)(this["MaximizedGrid"]));
+            }
+            set {
+                this["MaximizedGrid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MaximizedMap {
+            get {
+                return ((bool)(this["MaximizedMap"]));
+            }
+            set {
+                this["MaximizedMap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MaximizedMain {
+            get {
+                return ((bool)(this["MaximizedMain"]));
+            }
+            set {
+                this["MaximizedMain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MinimizedGrid {
+            get {
+                return ((bool)(this["MinimizedGrid"]));
+            }
+            set {
+                this["MinimizedGrid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MinimizedMap {
+            get {
+                return ((bool)(this["MinimizedMap"]));
+            }
+            set {
+                this["MinimizedMap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MinimizedMain {
+            get {
+                return ((bool)(this["MinimizedMain"]));
+            }
+            set {
+                this["MinimizedMain"] = value;
             }
         }
     }

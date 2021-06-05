@@ -41,13 +41,13 @@
     <Setting Name="AzimuthOn" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="RestoreBounds" Type="System.Drawing.Rectangle" Scope="User">
+    <Setting Name="RestoreBoundsOld" Type="System.Drawing.Rectangle" Scope="User">
       <Value Profile="(Default)">0, 0, 292, 300</Value>
     </Setting>
-    <Setting Name="MapSize" Type="System.String" Scope="User">
+    <Setting Name="MapSizeOld" Type="System.String" Scope="User">
       <Value Profile="(Default)">400, 400</Value>
     </Setting>
-    <Setting Name="MapRestoreBounds" Type="System.Drawing.Rectangle" Scope="User">
+    <Setting Name="MapRestoreBoundsOld" Type="System.Drawing.Rectangle" Scope="User">
       <Value Profile="(Default)">0, 0, 200, 300</Value>
     </Setting>
     <Setting Name="GridDisplay" Type="System.Int32" Scope="User">
@@ -85,6 +85,42 @@
     </Setting>
     <Setting Name="GridMode2" Type="System.String" Scope="User">
       <Value Profile="(Default)">ALL</Value>
+    </Setting>
+    <Setting Name="LocationGrid" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="LocationMap" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="LocationMain" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="SizeGrid" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">400, 400</Value>
+    </Setting>
+    <Setting Name="SizeMap" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">400, 400</Value>
+    </Setting>
+    <Setting Name="SizeMain" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">400, 400</Value>
+    </Setting>
+    <Setting Name="MaximizedGrid" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MaximizedMap" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MaximizedMain" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MinimizedGrid" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MinimizedMap" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MinimizedMain" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

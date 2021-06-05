@@ -43,12 +43,36 @@ namespace LOTWQSL
             //countriesLoad();
         }
 
+        private void WindowLoadLocationGrid()
+        {
+            if (Properties.Settings.Default.MaximizedGrid)
+            {
+                WindowState = FormWindowState.Maximized;
+                Location = Properties.Settings.Default.LocationGrid;
+                Size = Properties.Settings.Default.SizeGrid;
+            }
+            else if (Properties.Settings.Default.MinimizedGrid)
+            {
+                WindowState = FormWindowState.Minimized;
+                Location = Properties.Settings.Default.LocationGrid;
+                Size = Properties.Settings.Default.SizeGrid;
+            }
+            else
+            {
+                Location = Properties.Settings.Default.LocationGrid;
+                Size = Properties.Settings.Default.SizeGrid;
+            }
+        }
+
+
         private void GridForm_Load(object sender, EventArgs e)
         {
+            WindowLoadLocationGrid();
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             ExtensionMethods.DoubleBuffered(dataGridView1, true);
             BandsLoad();
+            /*
             this.Top = Properties.Settings.Default.GridRestoreBounds.Top;
             this.Left = Properties.Settings.Default.GridRestoreBounds.Left;
             this.Height = Properties.Settings.Default.GridRestoreBounds.Height;
@@ -70,6 +94,7 @@ namespace LOTWQSL
                 this.Top = 0;
                 this.Left = 0;
             }
+            */
             foreach (DataGridViewColumn column in dataGridView1.Columns)
             {
                 if (column.Index == 0) column.Width = 50;
@@ -669,12 +694,37 @@ namespace LOTWQSL
             }
         }
 
+        private void WindowSaveLocationGrid()
+        {
+            if (WindowState == FormWindowState.Maximized)
+            {
+                Properties.Settings.Default.LocationGrid = RestoreBounds.Location;
+                Properties.Settings.Default.SizeGrid = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedGrid = true;
+                Properties.Settings.Default.MinimizedGrid = false;
+            }
+            else if (WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.LocationGrid = Location;
+                Properties.Settings.Default.SizeGrid = Size;
+                Properties.Settings.Default.MaximizedGrid = false;
+                Properties.Settings.Default.MinimizedGrid = false;
+            }
+            else
+            {
+                Properties.Settings.Default.LocationGrid = RestoreBounds.Location;
+                Properties.Settings.Default.SizeGrid = RestoreBounds.Size;
+                Properties.Settings.Default.MaximizedGrid = false;
+                Properties.Settings.Default.MinimizedGrid = true;
+            }
+            Properties.Settings.Default.Save();
+        }
+
         private void GridForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            WindowSaveLocationGrid();
             if (e.CloseReason != CloseReason.UserClosing)
             {
-                Properties.Settings.Default.GridRestoreBounds = this.RestoreBounds;
-                Properties.Settings.Default.Save();
                 return;
             }
             Hide();
