@@ -469,6 +469,7 @@ namespace LOTWQSL
         /// </summary>
         /// <param name="utmZone">Utm Zone</param>
         /// <returns>Projection</returns>
+        /*
         private IProjectedCoordinateSystem CreateUtmProjection(int utmZone)
         {
             CoordinateSystemFactory cFac = new CoordinateSystemFactory();
@@ -494,7 +495,7 @@ namespace LOTWQSL
                projection, LinearUnit.Metre, new AxisInfo("East", AxisOrientationEnum.East),
                new AxisInfo("North", AxisOrientationEnum.North));
         }
-
+        */
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -505,7 +506,7 @@ namespace LOTWQSL
             ParseModes();
             Properties.Settings.Default.mapBand = bandSelected;
             Properties.Settings.Default.Save();
-            mapBox1.PreviewMode = SharpMap.Forms.MapBox.PreviewModes.Fast;
+            //mapBox1.PreviewMode = SharpMap.Forms.MapBox.PreviewModes.Fast;
             mapBox1.Invalidate();
             mapBox1.Refresh();
         }
@@ -635,7 +636,7 @@ namespace LOTWQSL
                 Properties.Settings.Default.Mode = modeSelected;
                 Properties.Settings.Default.Save();
                 button1.Enabled = false;
-                mapBox1.PreviewMode = SharpMap.Forms.MapBox.PreviewModes.Fast;
+                //mapBox1.PreviewMode = SharpMap.Forms.MapBox.PreviewModes.Fast;
                 mapBox1.Invalidate();
                 mapBox1.Refresh();
             }

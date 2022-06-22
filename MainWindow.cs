@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Deployment.Application;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -125,8 +120,10 @@ namespace LOTWQSL
             this.Left = Properties.Settings.Default.RestoreBounds.Left;
             this.Height = Properties.Settings.Default.RestoreBounds.Height;
             this.Width = Properties.Settings.Default.RestoreBounds.Width;
-            if (this.Width < 185) this.Width = 185;
-            if (this.Height < 180) this.Height = 180;
+            if (this.Width < 185) 
+            this.Width = 185;
+            if (this.Height < 180) 
+            this.Height = 180;
             Rectangle rect = SystemInformation.VirtualScreen;
             if (this.Location.X < 0 || this.Location.Y < 0)
             {
@@ -282,9 +279,11 @@ namespace LOTWQSL
                 }
                 else
                 {
+                    int n = 0;
                     // Somehow we're getting dups...this is a temporary fix until figured out
                     while ((line = file.ReadLine()) != null)
                     {
+                        n++;
                         if (line.Length < 2) continue;
                         //if (line.Contains("70CM")) continue;
                         if (line.Length < 9)
@@ -422,7 +421,7 @@ namespace LOTWQSL
         }
 
         private void CheckForUpdate() {
-            int currentVersion = 1110; // Matches 4-digit version number e.g. 1.10 = 1100
+            int currentVersion = 1112; // Matches 4-digit version number e.g. 1.10 = 1100
             try
             {
                 string uri1 = "https://www.dropbox.com/s/s78p4i7yyng1rg9/LOTWQSL.ver?dl=1";
