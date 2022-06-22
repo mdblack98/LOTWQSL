@@ -275,7 +275,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>4.5.11</Version>
+      <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
       <Version>3.4.3</Version>
